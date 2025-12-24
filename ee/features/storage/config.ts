@@ -1,5 +1,30 @@
 import { getFeatureFlags } from "@/lib/featureFlags";
 
+/**
+ * Checks if S3 storage is configured (has required environment variables).
+ * Does not throw - returns false if not configured.
+ */
+export function isS3Configured(storageRegion?: string): boolean {
+  const isUS = storageRegion === "us-east-2";
+  const suffix = isUS ? "_US" : "";
+  
+  const bucket = process.env[`NEXT_PRIVATE_UPLOAD_BUCKET${suffix}`];
+  const accessKeyId = process.env[`NEXT_PRIVATE_UPLOAD_ACCESS_KEY_ID${suffix}`];
+  const secretAccessKey = process.env[`NEXT_PRIVATE_UPLOAD_SECRET_ACCESS_KEY${suffix}`];
+  
+  const configured = !!(bucket && accessKeyId && secretAccessKey);
+  
+  if (!configured) {
+    console.log(`[Storage] S3 not configured for region ${storageRegion || 'eu-central-1'}. Missing env vars:`, {
+      hasBucket: !!bucket,
+      hasAccessKeyId: !!accessKeyId,
+      hasSecretAccessKey: !!secretAccessKey,
+    });
+  }
+  
+  return configured;
+}
+
 export interface StorageConfig {
   bucket: string;
   advancedBucket?: string;

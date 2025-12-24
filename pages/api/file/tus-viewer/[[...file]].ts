@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { isS3Configured } from "@/ee/features/storage/config";
 import { MultiRegionS3Store } from "@/ee/features/storage/s3-store";
 import { CopyObjectCommand } from "@aws-sdk/client-s3";
 import slugify from "@sindresorhus/slugify";
@@ -21,210 +22,252 @@ export const config = {
   },
 };
 
-const locker = new RedisLocker({
-  redisClient: lockerRedisClient,
-});
+// Lazy initialization of TUS server - only created when S3 is configured and first request comes in
+let tusServer: Server | null = null;
+let tusServerInitError: string | null = null;
 
-const tusServer = new Server({
-  // `path` needs to match the route declared by the next file router
-  path: "/api/file/tus-viewer",
-  maxSize: 1024 * 1024 * 1024 * 2, // 2 GiB
-  respectForwardedHeaders: true,
-  locker,
-  datastore: new MultiRegionS3Store(),
-  async namingFunction(req, metadata) {
-    // Extract viewer data from metadata
-    const { teamId, fileName, viewerId, linkId, dataroomId } = metadata as {
-      teamId: string;
-      fileName: string;
-      viewerId: string;
-      linkId: string;
-      dataroomId: string;
-    };
+function getTusServer(): Server | null {
+  // If we already tried and failed, return null
+  if (tusServerInitError) {
+    console.log("[TUS-Viewer] Server initialization previously failed:", tusServerInitError);
+    return null;
+  }
 
-    // Validate the viewer exists and has permission
-    let teamIdToUse = teamId;
-    try {
-      if (teamId !== "visitor-upload") {
-        throw new Error("Unauthorized to access this team");
-      }
+  // If already initialized, return it
+  if (tusServer) {
+    return tusServer;
+  }
 
-      const link = await prisma.link.findUnique({
-        where: {
-          id: linkId,
-          dataroomId: dataroomId || null,
-        },
-        select: { teamId: true, enableUpload: true },
-      });
+  // Check if S3 is configured before trying to create the server
+  if (!isS3Configured()) {
+    tusServerInitError = "S3 storage is not configured. TUS uploads require S3/R2 storage.";
+    console.log("[TUS-Viewer] Cannot initialize server:", tusServerInitError);
+    console.log("[TUS-Viewer] If you want to use Vercel Blob instead, set NEXT_PUBLIC_UPLOAD_TRANSPORT=vercel");
+    return null;
+  }
 
-      if (!link || !link.enableUpload || !link.teamId) {
-        throw new Error("Upload not allowed");
-      }
+  try {
+    console.log("[TUS-Viewer] Initializing TUS server with S3 storage...");
 
-      const viewer = await prisma.viewer.findUnique({
-        where: { id: viewerId },
-        select: { teamId: true },
-      });
-
-      if (!viewer || viewer.teamId !== link.teamId) {
-        throw new Error("Unauthorized to access this team");
-      }
-
-      teamIdToUse = link.teamId;
-    } catch (error) {
-      console.error("Error validating viewer:", error);
-      throw new Error("Unauthorized");
-    }
-
-    const docId = newId("doc");
-    const { name, ext } = path.parse(fileName);
-    const newName = `${teamIdToUse}/${docId}/${slugify(name)}${ext}`;
-    return newName;
-  },
-  generateUrl(req, { proto, host, path, id }) {
-    // Encode the ID to be URL safe
-    id = Buffer.from(id, "utf-8").toString("base64url");
-    return `${proto}://${host}${path}/${id}`;
-  },
-  getFileIdFromRequest(req) {
-    // Extract the ID from the URL
-    const id = (req.url as string).split("/api/file/tus-viewer/")[1];
-    return Buffer.from(id, "base64url").toString("utf-8");
-  },
-  onResponseError(req, res, err) {
-    log({
-      message: "Error uploading a file via viewer. Error: \n\n" + err,
-      type: "error",
+    const locker = new RedisLocker({
+      redisClient: lockerRedisClient,
     });
-    return { status_code: 500, body: "Internal Server Error" };
-  },
-  async onUploadCreate(req, res, upload) {
-    // Extract viewer data from metadata
-    const { teamId, fileName, viewerId, linkId, dataroomId } =
-      upload.metadata as {
-        teamId: string;
-        fileName: string;
-        viewerId: string;
-        dataroomId: string;
-        linkId: string;
-      };
 
-    // Validate the viewer exists and has permission
-    try {
-      if (teamId !== "visitor-upload") {
-        throw new Error("Unauthorized to access this team");
-      }
+    tusServer = new Server({
+      // `path` needs to match the route declared by the next file router
+      path: "/api/file/tus-viewer",
+      maxSize: 1024 * 1024 * 1024 * 2, // 2 GiB
+      respectForwardedHeaders: true,
+      locker,
+      datastore: new MultiRegionS3Store(),
+      async namingFunction(req, metadata) {
+        // Extract viewer data from metadata
+        const { teamId, fileName, viewerId, linkId, dataroomId } = metadata as {
+          teamId: string;
+          fileName: string;
+          viewerId: string;
+          linkId: string;
+          dataroomId: string;
+        };
 
-      const link = await prisma.link.findUnique({
-        where: {
-          id: linkId,
-          dataroomId: dataroomId || null,
-        },
-        select: { teamId: true, enableUpload: true },
-      });
+        // Validate the viewer exists and has permission
+        let teamIdToUse = teamId;
+        try {
+          if (teamId !== "visitor-upload") {
+            throw new Error("Unauthorized to access this team");
+          }
 
-      if (!link || !link.enableUpload || !link.teamId) {
-        throw new Error("Upload not allowed");
-      }
+          const link = await prisma.link.findUnique({
+            where: {
+              id: linkId,
+              dataroomId: dataroomId || null,
+            },
+            select: { teamId: true, enableUpload: true },
+          });
 
-      const viewer = await prisma.viewer.findUnique({
-        where: { id: viewerId },
-        select: { teamId: true },
-      });
+          if (!link || !link.enableUpload || !link.teamId) {
+            throw new Error("Upload not allowed");
+          }
 
-      if (!viewer || viewer.teamId !== link.teamId) {
-        throw new Error("Unauthorized to access this team");
-      }
+          const viewer = await prisma.viewer.findUnique({
+            where: { id: viewerId },
+            select: { teamId: true },
+          });
 
-      return res;
-    } catch (error) {
-      console.error("Error validating viewer:", error);
-      throw new Error("Unauthorized");
-    }
-  },
-  async onUploadFinish(req, res, upload) {
-    try {
-      const metadata = upload.metadata || {};
-      const contentType = metadata.contentType || "application/octet-stream";
-      const { name, ext } = path.parse(metadata.fileName!);
-      const contentDisposition = `attachment; filename="${slugify(name)}${ext}"`;
+          if (!viewer || viewer.teamId !== link.teamId) {
+            throw new Error("Unauthorized to access this team");
+          }
 
-      // The Key (object path) where the file was uploaded
-      const objectKey = upload.id;
-
-      // Extract teamId from the object key (format: teamId/docId/filename)
-      const teamId = objectKey.split("/")[0];
-      if (!teamId) {
-        throw { status_code: 500, body: "Invalid object key format" };
-      }
-
-      // Get team-specific S3 client and config
-      const { client, config } = await getTeamS3ClientAndConfig(teamId);
-
-      // Copy the object onto itself, replacing the metadata
-      const params = {
-        Bucket: config.bucket,
-        CopySource: `${config.bucket}/${objectKey}`,
-        Key: objectKey,
-        ContentType: contentType,
-        ContentDisposition: contentDisposition,
-        MetadataDirective: "REPLACE" as const,
-      };
-
-      const copyCommand = new CopyObjectCommand(params);
-      await client.send(copyCommand);
-
-      return res;
-    } catch (error) {
-      throw { status_code: 500, body: "Error updating metadata" };
-    }
-  },
-  async onIncomingRequest(req, res, uploadId) {
-    // Check if this is a new upload or continuation
-    if (req.method === "POST" && !uploadId) {
-      // For new uploads, we need to parse the Upload-Metadata header to get linkId and dataroomId
-      const metadataHeader = req.headers["upload-metadata"];
-
-      if (!metadataHeader) {
-        throw { status_code: 403, body: "Missing upload metadata" };
-      }
-
-      // Parse TUS metadata (format: key base64value,key2 base64value2)
-      const metadata: Record<string, string> = {};
-      const headerString = Array.isArray(metadataHeader)
-        ? metadataHeader[0]
-        : metadataHeader;
-      headerString.split(",").forEach((item: string) => {
-        const [key, value] = item.trim().split(" ");
-        if (key && value) {
-          metadata[key] = Buffer.from(value, "base64").toString();
+          teamIdToUse = link.teamId;
+        } catch (error) {
+          console.error("[TUS-Viewer] Error validating viewer:", error);
+          throw new Error("Unauthorized");
         }
-      });
 
-      const { linkId, dataroomId, viewerId } = metadata;
+        const docId = newId("doc");
+        const { name, ext } = path.parse(fileName);
+        const newName = `${teamIdToUse}/${docId}/${slugify(name)}${ext}`;
+        console.log("[TUS-Viewer] Generated upload path:", newName);
+        return newName;
+      },
+      generateUrl(req, { proto, host, path, id }) {
+        // Encode the ID to be URL safe
+        id = Buffer.from(id, "utf-8").toString("base64url");
+        return `${proto}://${host}${path}/${id}`;
+      },
+      getFileIdFromRequest(req) {
+        // Extract the ID from the URL
+        const id = (req.url as string).split("/api/file/tus-viewer/")[1];
+        return Buffer.from(id, "base64url").toString("utf-8");
+      },
+      onResponseError(req, res, err) {
+        log({
+          message: "Error uploading a file via viewer. Error: \n\n" + err,
+          type: "error",
+        });
+        console.error("[TUS-Viewer] Upload error:", err);
+        return { status_code: 500, body: "Internal Server Error" };
+      },
+      async onUploadCreate(req, res, upload) {
+        // Extract viewer data from metadata
+        const { teamId, fileName, viewerId, linkId, dataroomId } =
+          upload.metadata as {
+            teamId: string;
+            fileName: string;
+            viewerId: string;
+            dataroomId: string;
+            linkId: string;
+          };
 
-      if (!linkId || !dataroomId) {
-        throw { status_code: 403, body: "Missing required metadata" };
-      }
+        // Validate the viewer exists and has permission
+        try {
+          if (teamId !== "visitor-upload") {
+            throw new Error("Unauthorized to access this team");
+          }
 
-      // Verify the session
-      const session = await verifyDataroomSessionInPagesRouter(
-        req as NextApiRequest,
-        linkId,
-        dataroomId,
-      );
+          const link = await prisma.link.findUnique({
+            where: {
+              id: linkId,
+              dataroomId: dataroomId || null,
+            },
+            select: { teamId: true, enableUpload: true },
+          });
 
-      if (!session) {
-        throw { status_code: 403, body: "Unauthorized" };
-      }
+          if (!link || !link.enableUpload || !link.teamId) {
+            throw new Error("Upload not allowed");
+          }
 
-      // Optional: Verify that the viewerId in the request matches the session
-      if (viewerId && session.viewerId && viewerId !== session.viewerId) {
-        throw { status_code: 403, body: "Invalid viewer" };
-      }
-    }
-  },
-});
+          const viewer = await prisma.viewer.findUnique({
+            where: { id: viewerId },
+            select: { teamId: true },
+          });
+
+          if (!viewer || viewer.teamId !== link.teamId) {
+            throw new Error("Unauthorized to access this team");
+          }
+
+          console.log("[TUS-Viewer] Upload created for viewer:", viewerId);
+          return res;
+        } catch (error) {
+          console.error("[TUS-Viewer] Error validating viewer:", error);
+          throw new Error("Unauthorized");
+        }
+      },
+      async onUploadFinish(req, res, upload) {
+        try {
+          console.log("[TUS-Viewer] Upload finished, updating metadata for:", upload.id);
+          const metadata = upload.metadata || {};
+          const contentType = metadata.contentType || "application/octet-stream";
+          const { name, ext } = path.parse(metadata.fileName!);
+          const contentDisposition = `attachment; filename="${slugify(name)}${ext}"`;
+
+          // The Key (object path) where the file was uploaded
+          const objectKey = upload.id;
+
+          // Extract teamId from the object key (format: teamId/docId/filename)
+          const teamId = objectKey.split("/")[0];
+          if (!teamId) {
+            throw { status_code: 500, body: "Invalid object key format" };
+          }
+
+          // Get team-specific S3 client and config
+          const { client, config } = await getTeamS3ClientAndConfig(teamId);
+
+          // Copy the object onto itself, replacing the metadata
+          const params = {
+            Bucket: config.bucket,
+            CopySource: `${config.bucket}/${objectKey}`,
+            Key: objectKey,
+            ContentType: contentType,
+            ContentDisposition: contentDisposition,
+            MetadataDirective: "REPLACE" as const,
+          };
+
+          const copyCommand = new CopyObjectCommand(params);
+          await client.send(copyCommand);
+
+          console.log("[TUS-Viewer] Metadata updated successfully for:", upload.id);
+          return res;
+        } catch (error) {
+          console.error("[TUS-Viewer] Error updating metadata:", error);
+          throw { status_code: 500, body: "Error updating metadata" };
+        }
+      },
+      async onIncomingRequest(req, res, uploadId) {
+        // Check if this is a new upload or continuation
+        if (req.method === "POST" && !uploadId) {
+          // For new uploads, we need to parse the Upload-Metadata header to get linkId and dataroomId
+          const metadataHeader = req.headers["upload-metadata"];
+
+          if (!metadataHeader) {
+            throw { status_code: 403, body: "Missing upload metadata" };
+          }
+
+          // Parse TUS metadata (format: key base64value,key2 base64value2)
+          const metadata: Record<string, string> = {};
+          const headerString = Array.isArray(metadataHeader)
+            ? metadataHeader[0]
+            : metadataHeader;
+          headerString.split(",").forEach((item: string) => {
+            const [key, value] = item.trim().split(" ");
+            if (key && value) {
+              metadata[key] = Buffer.from(value, "base64").toString();
+            }
+          });
+
+          const { linkId, dataroomId, viewerId } = metadata;
+
+          if (!linkId || !dataroomId) {
+            throw { status_code: 403, body: "Missing required metadata" };
+          }
+
+          // Verify the session
+          const session = await verifyDataroomSessionInPagesRouter(
+            req as NextApiRequest,
+            linkId,
+            dataroomId,
+          );
+
+          if (!session) {
+            throw { status_code: 403, body: "Unauthorized" };
+          }
+
+          // Optional: Verify that the viewerId in the request matches the session
+          if (viewerId && session.viewerId && viewerId !== session.viewerId) {
+            throw { status_code: 403, body: "Invalid viewer" };
+          }
+        }
+      },
+    });
+
+    console.log("[TUS-Viewer] Server initialized successfully");
+    return tusServer;
+  } catch (error) {
+    tusServerInitError = error instanceof Error ? error.message : String(error);
+    console.error("[TUS-Viewer] Failed to initialize server:", tusServerInitError);
+    return null;
+  }
+}
 
 // CORS headers to allow custom domains
 const setCorsHeaders = (req: NextApiRequest, res: NextApiResponse) => {
@@ -246,6 +289,8 @@ const setCorsHeaders = (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log("[TUS-Viewer] Received request:", req.method, req.url);
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     setCorsHeaders(req, res);
@@ -255,6 +300,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // Set CORS headers for all requests
   setCorsHeaders(req, res);
 
+  // Get or initialize the TUS server
+  const server = getTusServer();
+  if (!server) {
+    console.log("[TUS-Viewer] Server not available, returning 503");
+    return res.status(503).json({
+      message: "TUS uploads are not available. S3 storage is not configured.",
+      hint: "If you want to use Vercel Blob instead of S3, ensure NEXT_PUBLIC_UPLOAD_TRANSPORT=vercel is set and use the standard upload endpoint.",
+    });
+  }
+
   // No session check - authentication is handled via viewer metadata
-  return tusServer.handle(req, res);
+  return server.handle(req, res);
 }
