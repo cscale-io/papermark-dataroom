@@ -130,11 +130,15 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async (params) => {
       const { token, user, trigger } = params;
-      if (!token.email) {
-        return {};
-      }
       if (user) {
         token.user = user;
+        // Ensure email is set from user on first sign-in
+        if (!token.email && user.email) {
+          token.email = user.email;
+        }
+      }
+      if (!token.email) {
+        return {};
       }
       // refresh the user data
       if (trigger === "update") {

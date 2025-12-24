@@ -9,6 +9,8 @@ export default async function AppMiddleware(req: NextRequest) {
   const token = (await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: false,
+    cookieName: "next-auth.session-token",
   })) as {
     email?: string;
     user?: {
@@ -47,4 +49,6 @@ export default async function AppMiddleware(req: NextRequest) {
       new URL(decodeURIComponent(nextPath), req.url),
     );
   }
+
+  return NextResponse.next();
 }
