@@ -8,13 +8,16 @@ export default async function AppMiddleware(req: NextRequest) {
   const url = req.nextUrl;
   const path = url.pathname;
   const isInvited = url.searchParams.has("invitation");
+  
+  const cookieName = VERCEL_DEPLOYMENT
+    ? "__Secure-next-auth.session-token"
+    : "next-auth.session-token";
+  
   const token = (await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
     secureCookie: VERCEL_DEPLOYMENT,
-    cookieName: VERCEL_DEPLOYMENT
-      ? "__Secure-next-auth.session-token"
-      : "next-auth.session-token",
+    cookieName,
   })) as {
     email?: string;
     user?: {
@@ -22,8 +25,18 @@ export default async function AppMiddleware(req: NextRequest) {
     };
   };
 
+  const hasCookie = !!req.cookies.get(cookieName);
+  const allCookies = req.cookies.getAll().map(c => c.name);
+  const hasSecret = !!process.env.NEXTAUTH_SECRET;
+  console.log(`[AppMW] === APP MIDDLEWARE ===`);
+  console.log(`[AppMW] path=${path}, VERCEL_DEPLOYMENT=${VERCEL_DEPLOYMENT}`);
+  console.log(`[AppMW] cookieName=${cookieName}, hasCookie=${hasCookie}, hasSecret=${hasSecret}`);
+  console.log(`[AppMW] allCookies=${JSON.stringify(allCookies)}`);
+  console.log(`[AppMW] tokenEmail=${token?.email}, tokenSub=${(token as any)?.sub}`);
+
   // UNAUTHENTICATED if there's no token and the path isn't /login, redirect to /login
   if (!token?.email && path !== "/login") {
+    console.log(`[AppMW] UNAUTHENTICATED, redirecting to /login`);
     const loginUrl = new URL(`/login`, req.url);
     // Append "next" parameter only if not navigating to the root
     if (path !== "/") {
@@ -49,10 +62,12 @@ export default async function AppMiddleware(req: NextRequest) {
   // AUTHENTICATED if the path is /login, redirect to "/dashboard"
   if (token?.email && path === "/login") {
     const nextPath = url.searchParams.get("next") || "/dashboard"; // Default redirection to "/dashboard" if no next parameter
+    console.log(`[AppMW] AUTHENTICATED on /login, redirecting to ${nextPath}`);
     return NextResponse.redirect(
       new URL(decodeURIComponent(nextPath), req.url),
     );
   }
 
+  console.log(`[AppMW] Passing through with NextResponse.next()`);
   return NextResponse.next();
 }

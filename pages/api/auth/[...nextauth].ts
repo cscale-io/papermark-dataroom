@@ -161,16 +161,20 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async (params) => {
       const { token, user, trigger } = params;
+      console.log(`[JWT] trigger=${trigger}, hasUser=${!!user}, tokenEmail=${token?.email}`);
       if (user) {
         token.user = user;
         // Ensure email is set from user on first sign-in
         if (!token.email && user.email) {
           token.email = user.email;
+          console.log(`[JWT] Set token.email from user: ${user.email}`);
         }
       }
       if (!token.email) {
+        console.log(`[JWT] No email in token, returning empty`);
         return {};
       }
+      console.log(`[JWT] Returning token with email: ${token.email}`);
       // refresh the user data
       if (trigger === "update") {
         const user = token?.user as CustomUser;
