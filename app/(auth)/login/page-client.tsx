@@ -43,10 +43,10 @@ export default function Login() {
     <div className="flex h-screen w-full items-center justify-center bg-gray-50">
       <div className="z-10 mx-5 h-fit w-full max-w-md overflow-hidden rounded-lg sm:mx-0">
         <div className="flex flex-col space-y-3 px-4 py-6 pt-8 sm:px-12">
-          <h1 className="text-balance text-3xl font-semibold text-gray-900">
+          <h1 className="text-balance text-center text-3xl font-semibold text-gray-900">
             Welcome to C.Scale
           </h1>
-          <h3 className="text-balance text-sm text-gray-800">
+          <h3 className="text-balance text-center text-sm text-gray-800">
             Secure Data Room
           </h3>
         </div>
