@@ -80,8 +80,8 @@ export default function VerifyPage({
         <div className="z-10 mx-5 mt-[calc(1vh)] h-fit w-full max-w-md overflow-hidden rounded-lg sm:mx-0 sm:mt-[calc(2vh)] md:mt-[calc(3vh)]">
           <div className="items-left flex flex-col space-y-3 px-4 py-6 pt-8 sm:px-12">
             <img
-              src="/_static/papermark-logo.svg"
-              alt="Papermark Logo"
+              src="/_static/cscale-logo.svg"
+              alt="C.Scale Logo"
               className="-mt-8 mb-36 h-7 w-auto self-start sm:mb-32 md:mb-48"
             />
             <Link href="/">
@@ -90,7 +90,7 @@ export default function VerifyPage({
               </span>
             </Link>
             <h3 className="text-balance text-sm text-gray-800">
-              Share documents. Not attachments.
+              Secure Data Room
             </h3>
           </div>
           <div className="flex flex-col gap-4 px-4 pt-8 sm:px-12">

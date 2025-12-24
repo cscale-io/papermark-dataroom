@@ -9,6 +9,16 @@ export const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
+// Set RESEND_TEST_MODE=true in .env.local to redirect all emails to delivered@resend.dev
+const isTestMode = process.env.RESEND_TEST_MODE === "true";
+
+console.log("[Resend] Module initialized:", {
+  RESEND_API_KEY_SET: !!process.env.RESEND_API_KEY,
+  RESEND_API_KEY_PREFIX: process.env.RESEND_API_KEY?.substring(0, 8) + "...",
+  resendClientCreated: !!resend,
+  RESEND_TEST_MODE: isTestMode,
+});
+
 export const sendEmail = async ({
   to,
   subject,
@@ -36,8 +46,19 @@ export const sendEmail = async ({
   scheduledAt?: string;
   unsubscribeUrl?: string;
 }) => {
+  console.log("[Resend sendEmail] Called with:", {
+    to,
+    subject,
+    test,
+    system,
+    marketing,
+    verify,
+    resendInitialized: !!resend,
+  });
+
   if (!resend) {
     // Throw an error if resend is not initialized
+    console.error("[Resend sendEmail] FAILED: Resend not initialized - check RESEND_API_KEY");
     throw new Error("Resend not initialized");
   }
 
@@ -47,21 +68,32 @@ export const sendEmail = async ({
   const fromAddress =
     from ??
     (marketing
-      ? "Marc from Papermark <marc@ship.papermark.io>"
+      ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
       : system
-        ? "Papermark <system@papermark.io>"
+        ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
         : verify
-          ? "Papermark <system@verify.papermark.io>"
+          ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
           : !!scheduledAt
-            ? "Marc Seitz <marc@papermark.io>"
-            : "Marc from Papermark <marc@papermark.io>");
+            ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
+            : "C.Scale DataRoom <dataroom@updates.cscale.io>");
+
+  // Use env var OR explicit test param to redirect to Resend's test inbox
+  const actualRecipient = (isTestMode || test) ? "delivered@resend.dev" : to;
+  
+  console.log("[Resend sendEmail] Preparing to send:", {
+    from: fromAddress,
+    to: actualRecipient,
+    originalTo: to,
+    testMode: isTestMode || test,
+    subject,
+  });
 
   try {
     const { data, error } = await resend.emails.send({
       from: fromAddress,
-      to: test ? "delivered@resend.dev" : to,
+      to: actualRecipient,
       cc: cc,
-      replyTo: marketing ? "marc@papermark.io" : replyTo,
+      replyTo: marketing ? "dataroom@updates.cscale.io" : replyTo,
       subject,
       react,
       scheduledAt,
@@ -70,6 +102,12 @@ export const sendEmail = async ({
         "X-Entity-Ref-ID": nanoid(),
         ...(unsubscribeUrl ? { "List-Unsubscribe": unsubscribeUrl } : {}),
       },
+    });
+
+    console.log("[Resend sendEmail] API Response:", {
+      success: !error,
+      data,
+      error,
     });
 
     // Check if the email sending operation returned an error and throw it
@@ -86,6 +124,7 @@ export const sendEmail = async ({
     return data;
   } catch (exception) {
     // Log and rethrow any caught exceptions for upstream handling
+    console.error("[Resend sendEmail] Exception caught:", exception);
     log({
       message: `Unexpected error when sending email: ${exception}`,
       type: "error",

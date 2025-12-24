@@ -29,7 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { BadgeTooltip } from "@/components/ui/tooltip";
 
-const DEFAULT_BANNER_IMAGE = "/_static/papermark-banner.png";
+const DEFAULT_BANNER_IMAGE = "/_static/cscale-banner.png";
 
 export default function DataroomBrandPage() {
   const router = useRouter();

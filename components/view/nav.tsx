@@ -251,18 +251,11 @@ export default function Nav({
                   className="h-16 w-36 object-contain"
                   src={brand.logo}
                   alt="Logo"
-                  // fill
-                  // quality={100}
-                  // priority
                 />
               ) : (
-                <Link
-                  href={`https://www.papermark.com/home?utm_campaign=navbar&utm_medium=navbar&utm_source=papermark-${linkId}`}
-                  target="_blank"
-                  className="text-2xl font-bold tracking-tighter text-white"
-                >
-                  Papermark
-                </Link>
+                <span className="text-2xl font-bold tracking-tighter text-white">
+                  C.Scale
+                </span>
               )}
             </div>
             {isDataroom ? (

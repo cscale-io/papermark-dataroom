@@ -19,7 +19,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "../../ui/button";
 import { ConversationSidebar } from "../conversations/sidebar";
 
-const DEFAULT_BANNER_IMAGE = "/_static/papermark-banner.png";
+const DEFAULT_BANNER_IMAGE = "/_static/cscale-banner.png";
 
 export default function DataroomNav({
   allowDownload,
@@ -140,13 +140,9 @@ export default function DataroomNav({
                   alt="Logo"
                 />
               ) : (
-                <Link
-                  href={`https://www.papermark.com/home?utm_campaign=navbar&utm_medium=navbar&utm_source=papermark-${linkId}`}
-                  target="_blank"
-                  className="text-2xl font-bold tracking-tighter text-white"
-                >
-                  Papermark
-                </Link>
+                <span className="text-2xl font-bold tracking-tighter text-white">
+                  C.Scale
+                </span>
               )}
             </div>
           </div>

@@ -18,7 +18,6 @@ import prisma from "@/lib/prisma";
 import { CreateUserEmailProps, CustomUser } from "@/lib/types";
 import { subscribe } from "@/lib/unsend";
 import { log } from "@/lib/utils";
-import { generateChecksum } from "@/lib/utils/generate-checksum";
 import { getIpAddress } from "@/lib/utils/ip";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
@@ -27,7 +26,7 @@ function getMainDomainUrl(): string {
   if (process.env.NODE_ENV === "development") {
     return process.env.NEXTAUTH_URL || "http://localhost:3000";
   }
-  return process.env.NEXTAUTH_URL || "https://app.papermark.com";
+  return process.env.NEXTAUTH_URL || "https://dataroom.cscale.io";
 }
 
 // This function can run for a maximum of 180 seconds
@@ -67,6 +66,13 @@ export const authOptions: NextAuthOptions = {
     }),
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
+        console.log("[Email Auth] sendVerificationRequest triggered", {
+          email: identifier,
+          NODE_ENV: process.env.NODE_ENV,
+          NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+          RESEND_API_KEY_SET: !!process.env.RESEND_API_KEY,
+        });
+
         const hasValidNextAuthUrl = !!process.env.NEXTAUTH_URL;
         let finalUrl = url;
 
@@ -81,26 +87,12 @@ export const authOptions: NextAuthOptions = {
           finalUrl = urlObj.toString();
         }
 
-        if (process.env.NODE_ENV === "development") {
-          const checksum = generateChecksum(finalUrl);
-          const verificationUrlParams = new URLSearchParams({
-            verification_url: finalUrl,
-            checksum,
-          });
-
-          const baseUrl = hasValidNextAuthUrl
-            ? process.env.NEXTAUTH_URL
-            : getMainDomainUrl();
-
-          const verificationUrl = `${baseUrl}/verify?${verificationUrlParams}`;
-          console.log("[Login URL]", verificationUrl);
-          return;
-        } else {
-          await sendVerificationRequestEmail({
-            url: finalUrl,
-            email: identifier,
-          });
-        }
+        console.log("[Email Auth] Calling sendVerificationRequestEmail...");
+        await sendVerificationRequestEmail({
+          url: finalUrl,
+          email: identifier,
+        });
+        console.log("[Email Auth] sendVerificationRequestEmail completed");
       },
     }),
     PasskeyProvider({
@@ -122,7 +114,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: "lax",
         path: "/",
         // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-        domain: VERCEL_DEPLOYMENT ? ".papermark.com" : undefined,
+        domain: VERCEL_DEPLOYMENT ? ".cscale.io" : undefined,
         secure: VERCEL_DEPLOYMENT,
       },
     },
@@ -202,7 +194,7 @@ const getAuthOptions = (req: NextApiRequest): NextAuthOptions => {
     ...authOptions,
     callbacks: {
       ...authOptions.callbacks,
-      signIn: async ({ user }) => {
+      signIn: async ({ user, account }) => {
         if (!user.email || (await isBlacklistedEmail(user.email))) {
           await identifyUser(user.email ?? user.id);
           await trackAnalytics({
@@ -211,6 +203,17 @@ const getAuthOptions = (req: NextApiRequest): NextAuthOptions => {
             userId: user.id,
           });
           return false;
+        }
+
+        // Block new user registration in production (allow in development)
+        if (process.env.NODE_ENV !== "development") {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email },
+          });
+          if (!existingUser) {
+            console.log(`[Auth] Blocked new user registration in production: ${user.email}`);
+            return false;
+          }
         }
 
         // Apply rate limiting for signin attempts

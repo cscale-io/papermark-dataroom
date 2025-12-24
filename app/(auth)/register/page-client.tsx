@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 
 import { useState } from "react";
 
-import PapermarkLogo from "@/public/_static/papermark-logo.svg";
+import CScaleLogo from "@/public/_static/cscale-logo.svg";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -37,14 +37,14 @@ export default function Register() {
         <div className="flex flex-col items-center justify-center space-y-3 px-4 py-6 pt-8 text-center sm:px-16">
           <Link href="/">
             <Image
-              src={PapermarkLogo}
+              src={CScaleLogo}
               width={119}
               height={32}
-              alt="Papermark Logo"
+              alt="C.Scale Logo"
             />
           </Link>
           <h3 className="text-2xl font-medium text-foreground">
-            Start sharing documents
+            C.Scale Data Room
           </h3>
         </div>
         <form

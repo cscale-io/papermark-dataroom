@@ -20,14 +20,15 @@ function isAnalyticsPath(path: string) {
 }
 
 function isCustomDomain(host: string) {
+  // For C.Scale fork: single domain deployment, no custom domains needed
+  // Custom domains would be any domain NOT matching the main app domain
   return (
     (process.env.NODE_ENV === "development" &&
-      (host?.includes(".local") || host?.includes("papermark.dev"))) ||
+      (host?.includes(".local"))) ||
     (process.env.NODE_ENV !== "development" &&
       !(
         host?.includes("localhost") ||
-        host?.includes("papermark.io") ||
-        host?.includes("papermark.com") ||
+        host?.includes("cscale.io") ||
         host?.endsWith(".vercel.app")
       ))
   );
@@ -65,7 +66,7 @@ export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
     return DomainMiddleware(req);
   }
 
-  // Handle standard papermark.io paths
+  // Handle standard app paths
   if (
     !path.startsWith("/view/") &&
     !path.startsWith("/verify") &&
