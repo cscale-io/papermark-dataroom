@@ -164,114 +164,127 @@ export const processDocument = async ({
   });
 
   // Trigger appropriate conversion tasks based on document type
-  // Check if it's a Keynote file (slides type with Keynote content type)
-  if (
-    type === "slides" &&
-    (contentType === "application/vnd.apple.keynote" ||
-      contentType === "application/x-iwork-keynote-sffkey")
-  ) {
-    await convertKeynoteToPdfTask.trigger(
-      {
-        documentId: document.id,
-        documentVersionId: document.versions[0].id,
-        teamId,
-      },
-      {
-        idempotencyKey: `${teamId}-${document.versions[0].id}-keynote`,
-        tags: [
-          `team_${teamId}`,
-          `document_${document.id}`,
-          `version:${document.versions[0].id}`,
-        ],
-        queue: conversionQueue(teamPlan),
-        concurrencyKey: teamId,
-      },
-    );
-  } else if (type === "docs" || type === "slides") {
-    await convertFilesToPdfTask.trigger(
-      {
-        documentId: document.id,
-        documentVersionId: document.versions[0].id,
-        teamId,
-      },
-      {
-        idempotencyKey: `${teamId}-${document.versions[0].id}-docs`,
-        tags: [
-          `team_${teamId}`,
-          `document_${document.id}`,
-          `version:${document.versions[0].id}`,
-        ],
-        queue: conversionQueue(teamPlan),
-        concurrencyKey: teamId,
-      },
-    );
-  }
+  // Wrapped in try-catch to handle missing TRIGGER_SECRET_KEY gracefully
+  try {
+    // Check if it's a Keynote file (slides type with Keynote content type)
+    if (
+      type === "slides" &&
+      (contentType === "application/vnd.apple.keynote" ||
+        contentType === "application/x-iwork-keynote-sffkey")
+    ) {
+      await convertKeynoteToPdfTask.trigger(
+        {
+          documentId: document.id,
+          documentVersionId: document.versions[0].id,
+          teamId,
+        },
+        {
+          idempotencyKey: `${teamId}-${document.versions[0].id}-keynote`,
+          tags: [
+            `team_${teamId}`,
+            `document_${document.id}`,
+            `version:${document.versions[0].id}`,
+          ],
+          queue: conversionQueue(teamPlan),
+          concurrencyKey: teamId,
+        },
+      );
+    } else if (type === "docs" || type === "slides") {
+      await convertFilesToPdfTask.trigger(
+        {
+          documentId: document.id,
+          documentVersionId: document.versions[0].id,
+          teamId,
+        },
+        {
+          idempotencyKey: `${teamId}-${document.versions[0].id}-docs`,
+          tags: [
+            `team_${teamId}`,
+            `document_${document.id}`,
+            `version:${document.versions[0].id}`,
+          ],
+          queue: conversionQueue(teamPlan),
+          concurrencyKey: teamId,
+        },
+      );
+    }
 
-  if (type === "cad") {
-    await convertCadToPdfTask.trigger(
-      {
-        documentId: document.id,
-        documentVersionId: document.versions[0].id,
-        teamId,
-      },
-      {
-        idempotencyKey: `${teamId}-${document.versions[0].id}-cad`,
-        tags: [
-          `team_${teamId}`,
-          `document_${document.id}`,
-          `version:${document.versions[0].id}`,
-        ],
-        queue: conversionQueue(teamPlan),
-        concurrencyKey: teamId,
-      },
-    );
-  }
+    if (type === "cad") {
+      await convertCadToPdfTask.trigger(
+        {
+          documentId: document.id,
+          documentVersionId: document.versions[0].id,
+          teamId,
+        },
+        {
+          idempotencyKey: `${teamId}-${document.versions[0].id}-cad`,
+          tags: [
+            `team_${teamId}`,
+            `document_${document.id}`,
+            `version:${document.versions[0].id}`,
+          ],
+          queue: conversionQueue(teamPlan),
+          concurrencyKey: teamId,
+        },
+      );
+    }
 
-  if (
-    type === "video" &&
-    contentType !== "video/mp4" &&
-    contentType?.startsWith("video/")
-  ) {
-    await processVideo.trigger(
-      {
-        videoUrl: key,
-        teamId,
-        docId: key.split("/")[1], // Extract doc_xxxx from teamId/doc_xxxx/filename
-        documentVersionId: document.versions[0].id,
-        fileSize: fileSize || 0,
-      },
-      {
-        idempotencyKey: `${teamId}-${document.versions[0].id}`,
-        tags: [
-          `team_${teamId}`,
-          `document_${document.id}`,
-          `version:${document.versions[0].id}`,
-        ],
-        queue: conversionQueue(teamPlan),
-        concurrencyKey: teamId,
-      },
-    );
-  }
+    if (
+      type === "video" &&
+      contentType !== "video/mp4" &&
+      contentType?.startsWith("video/")
+    ) {
+      await processVideo.trigger(
+        {
+          videoUrl: key,
+          teamId,
+          docId: key.split("/")[1], // Extract doc_xxxx from teamId/doc_xxxx/filename
+          documentVersionId: document.versions[0].id,
+          fileSize: fileSize || 0,
+        },
+        {
+          idempotencyKey: `${teamId}-${document.versions[0].id}`,
+          tags: [
+            `team_${teamId}`,
+            `document_${document.id}`,
+            `version:${document.versions[0].id}`,
+          ],
+          queue: conversionQueue(teamPlan),
+          concurrencyKey: teamId,
+        },
+      );
+    }
 
-  // skip triggering convert-pdf-to-image job for "notion" / "excel" documents
-  if (type === "pdf") {
-    await convertPdfToImageRoute.trigger(
-      {
-        documentId: document.id,
-        documentVersionId: document.versions[0].id,
-        teamId,
-      },
-      {
-        idempotencyKey: `${teamId}-${document.versions[0].id}`,
-        tags: [
-          `team_${teamId}`,
-          `document_${document.id}`,
-          `version:${document.versions[0].id}`,
-        ],
-        queue: conversionQueue(teamPlan),
-        concurrencyKey: teamId,
-      },
+    // skip triggering convert-pdf-to-image job for "notion" / "excel" documents
+    if (type === "pdf") {
+      await convertPdfToImageRoute.trigger(
+        {
+          documentId: document.id,
+          documentVersionId: document.versions[0].id,
+          teamId,
+        },
+        {
+          idempotencyKey: `${teamId}-${document.versions[0].id}`,
+          tags: [
+            `team_${teamId}`,
+            `document_${document.id}`,
+            `version:${document.versions[0].id}`,
+          ],
+          queue: conversionQueue(teamPlan),
+          concurrencyKey: teamId,
+        },
+      );
+    }
+  } catch (triggerError) {
+    // Log but don't fail document creation if Trigger.dev is not configured
+    console.warn(
+      "[DEBUG_UPLOAD] Trigger.dev task failed (TRIGGER_SECRET_KEY may not be set):",
+      (triggerError as Error).message,
     );
+    log({
+      message: `Trigger.dev conversion task skipped for document ${document.id}: ${(triggerError as Error).message}`,
+      type: "warning",
+    });
   }
 
   if (type === "sheet" && enableExcelAdvancedMode) {

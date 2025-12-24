@@ -416,6 +416,7 @@ export default function DocumentHeader({
         }
         mutate(`/api/teams/${teamInfo?.currentTeam?.id}/documents`, null, {
           populateCache: (_, docs) => {
+            if (!docs || !Array.isArray(docs)) return [];
             return docs.filter(
               (doc: DocumentWithLinksAndLinkCountAndViewCount) =>
                 doc.id !== documentId,

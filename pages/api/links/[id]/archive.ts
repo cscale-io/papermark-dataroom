@@ -11,16 +11,19 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  console.log("[DEBUG_API] archive.ts called", { method: req.method, id: req.query.id });
+  
   if (req.method === "PUT") {
     // PUT /api/links/:id/archive
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
+      console.log("[DEBUG_API] archive.ts unauthorized - no session");
       return res.status(401).end("Unauthorized");
     }
 
     const { id } = req.query as { id: string };
-
     const { isArchived } = req.body;
+    console.log("[DEBUG_API] archive.ts updating link", { id, isArchived });
 
     try {
       // Update the link in the database
@@ -53,6 +56,7 @@ export default async function handle(
         },
       });
       if (!updatedLink) {
+        console.log("[DEBUG_API] archive.ts link not found", { id });
         return res.status(404).json({ error: "Link not found" });
       }
 
@@ -63,9 +67,11 @@ export default async function handle(
         `${process.env.NEXTAUTH_URL}/api/revalidate?secret=${process.env.REVALIDATE_TOKEN}&linkId=${id}&hasDomain=${updatedLink.domainId ? "true" : "false"}`,
       );
 
+      console.log("[DEBUG_API] archive.ts success", { id, isArchived });
       return res.status(200).json({ ...rest, tags: linkTags });
     } catch (error) {
-      errorhandler(error, res);
+      console.error("[DEBUG_API] archive.ts error", { error: (error as Error).message });
+      return errorhandler(error, res);
     }
   }
 

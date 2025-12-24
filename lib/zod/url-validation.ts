@@ -102,11 +102,12 @@ const createFilePathValidator = () => {
             const isNotionSite = hostname.endsWith(".notion.site");
             const isValidNotionDomain = validNotionDomains.includes(hostname);
 
-            // Check for vercel blob storage
-            let isVercelBlob = false;
-            if (process.env.VERCEL_BLOB_HOST) {
-              isVercelBlob = hostname.startsWith(process.env.VERCEL_BLOB_HOST);
+            // Check for vercel blob storage (e.g., abc123.public.blob.vercel-storage.com)
+            let isVercelBlob = hostname.endsWith(".vercel-storage.com") || hostname.endsWith(".blob.vercel-storage.com");
+            if (!isVercelBlob && process.env.VERCEL_BLOB_HOST) {
+              isVercelBlob = hostname.includes(process.env.VERCEL_BLOB_HOST);
             }
+            console.log("[DEBUG_UPLOAD] filePathSchema URL check", { hostname, isNotionSite, isValidNotionDomain, isVercelBlob });
 
             // If it's not a standard Notion domain or Vercel blob, check if it's a custom Notion domain
             if (!isNotionSite && !isValidNotionDomain && !isVercelBlob) {
@@ -349,12 +350,22 @@ export const documentUploadSchema = z
         // S3_PATH should use file paths, not URLs
         return !data.url.startsWith("https://");
       } else if (data.storageType === "VERCEL_BLOB") {
-        // VERCEL_BLOB can use either Notion URLs or S3 paths (for migration)
+        // VERCEL_BLOB can use Vercel Blob URLs, Notion URLs, or S3 paths (for migration)
         if (data.url.startsWith("https://")) {
-          // Must be a Notion URL for VERCEL_BLOB
           try {
             const urlObj = new URL(data.url);
             const hostname = urlObj.hostname;
+
+            // Check for Vercel Blob storage URLs (e.g., abc123.public.blob.vercel-storage.com)
+            const isVercelBlob = hostname.endsWith(".vercel-storage.com") || hostname.endsWith(".blob.vercel-storage.com") || 
+              (process.env.VERCEL_BLOB_HOST ? hostname.includes(process.env.VERCEL_BLOB_HOST) : false);
+            
+            if (isVercelBlob) {
+              console.log("[DEBUG_UPLOAD] storageType validation: valid Vercel Blob URL", { hostname });
+              return true;
+            }
+
+            // Check for Notion URLs
             const isStandardNotion =
               hostname === "www.notion.so" ||
               hostname === "notion.so" ||
@@ -368,6 +379,7 @@ export const documentUploadSchema = z
             try {
               return await isCustomNotionDomain(data.url);
             } catch {
+              console.log("[DEBUG_UPLOAD] storageType validation: unknown URL type", { hostname });
               return false;
             }
           } catch {

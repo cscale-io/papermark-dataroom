@@ -41,6 +41,7 @@ export const putFile = async ({
   fileSize: number | undefined;
 }> => {
   const NEXT_PUBLIC_UPLOAD_TRANSPORT = process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT;
+  console.log("[DEBUG_UPLOAD] putFile start", { transport: NEXT_PUBLIC_UPLOAD_TRANSPORT, fileName: file.name, fileSize: file.size, teamId });
 
   const { type, data, numPages, fileSize } = await match(
     NEXT_PUBLIC_UPLOAD_TRANSPORT,
@@ -48,6 +49,7 @@ export const putFile = async ({
     .with("s3", async () => putFileInS3({ file, teamId, docId }))
     .with("vercel", async () => putFileInVercel(file))
     .otherwise(() => {
+      console.warn("[DEBUG_UPLOAD] putFile unknown transport", { transport: NEXT_PUBLIC_UPLOAD_TRANSPORT });
       return {
         type: null,
         data: null,
@@ -56,22 +58,40 @@ export const putFile = async ({
       };
     });
 
+  console.log("[DEBUG_UPLOAD] putFile complete", { type, hasData: !!data, numPages, fileSize });
   return { type, data, numPages, fileSize };
 };
 
 const putFileInVercel = async (file: File) => {
-  const newBlob = await upload(file.name, file, {
-    access: "public",
-    handleUploadUrl: "/api/file/browser-upload",
-  });
+  console.log("[DEBUG_UPLOAD] putFileInVercel start", { name: file.name, size: file.size, type: file.type });
+  
+  let newBlob;
+  try {
+    newBlob = await upload(file.name, file, {
+      access: "public",
+      handleUploadUrl: "/api/file/browser-upload",
+    });
+    console.log("[DEBUG_UPLOAD] putFileInVercel blob upload success", { url: newBlob.url });
+  } catch (error) {
+    console.error("[DEBUG_UPLOAD] putFileInVercel blob upload failed", { error: (error as Error).message, stack: (error as Error).stack });
+    throw error;
+  }
 
   let numPages: number = 1;
   // get page count for pdf files
   if (file.type === "application/pdf") {
-    const body = await file.arrayBuffer();
-    numPages = await getPagesCount(body);
+    try {
+      console.log("[DEBUG_UPLOAD] putFileInVercel getting page count");
+      const body = await file.arrayBuffer();
+      numPages = await getPagesCount(body);
+      console.log("[DEBUG_UPLOAD] putFileInVercel page count success", { numPages });
+    } catch (error) {
+      console.error("[DEBUG_UPLOAD] putFileInVercel page count failed", { error: (error as Error).message });
+      // Continue with default 1 page
+    }
   }
 
+  console.log("[DEBUG_UPLOAD] putFileInVercel complete", { url: newBlob.url, numPages, fileSize: file.size });
   return {
     type: DocumentStorageType.VERCEL_BLOB,
     data: newBlob.url,

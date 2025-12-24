@@ -134,8 +134,9 @@ export default async function handle(
       const sender = session.user as CustomUser;
 
       // invitation acceptance URL
+      const baseUrl = process.env.NEXTAUTH_URL;
       const invitationUrl = `/api/teams/${teamId}/invitations/accept?token=${token}&email=${email}`;
-      const fullInvitationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${invitationUrl}`;
+      const fullInvitationUrl = `${baseUrl}${invitationUrl}`;
 
       // magic link
       const magicLinkParams = new URLSearchParams({
@@ -144,7 +145,7 @@ export default async function handle(
         callbackUrl: fullInvitationUrl,
       });
 
-      const magicLink = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/email?${magicLinkParams.toString()}`;
+      const magicLink = `${baseUrl}/api/auth/callback/email?${magicLinkParams.toString()}`;
 
       const verifyParams = new URLSearchParams({
         verification_url: magicLink,
@@ -159,7 +160,7 @@ export default async function handle(
 
       const jwtToken = generateJWT(verifyParamsObject, 60 * 60 * 24 * 7); // 7 days
 
-      const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify/invitation?token=${jwtToken}`;
+      const verifyUrl = `${baseUrl}/verify/invitation?token=${jwtToken}`;
 
       console.log("[INVITE_API] About to send team invite email", {
         teamId,
@@ -168,7 +169,7 @@ export default async function handle(
         senderEmail: sender.email,
         teamName: team?.name,
         verifyUrl,
-        baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+        baseUrl,
       });
 
       try {

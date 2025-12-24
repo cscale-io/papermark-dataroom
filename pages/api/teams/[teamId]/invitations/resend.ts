@@ -101,10 +101,11 @@ export default async function handle(
 
       // send invite email
       const sender = session.user as CustomUser;
+      const baseUrl = process.env.NEXTAUTH_URL;
 
       // invitation acceptance URL
       const invitationUrl = `/api/teams/${teamId}/invitations/accept?token=${invitation.token}&email=${email}`;
-      const fullInvitationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${invitationUrl}`;
+      const fullInvitationUrl = `${baseUrl}${invitationUrl}`;
 
       // magic link
       const magicLinkParams = new URLSearchParams({
@@ -113,7 +114,7 @@ export default async function handle(
         callbackUrl: fullInvitationUrl,
       });
 
-      const magicLink = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/email?${magicLinkParams.toString()}`;
+      const magicLink = `${baseUrl}/api/auth/callback/email?${magicLinkParams.toString()}`;
 
       const verifyParams = new URLSearchParams({
         verification_url: magicLink,
@@ -128,18 +129,30 @@ export default async function handle(
 
       const jwtToken = generateJWT(verifyParamsObject);
 
-      const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify/invitation?token=${jwtToken}`;
+      const verifyUrl = `${baseUrl}/verify/invitation?token=${jwtToken}`;
 
-      sendTeammateInviteEmail({
-        senderName: sender.name || "",
-        senderEmail: sender.email || "",
-        teamName: team?.name || "",
-        to: email,
-        url: verifyUrl,
-      });
+      try {
+        await sendTeammateInviteEmail({
+          senderName: sender.name || "",
+          senderEmail: sender.email || "",
+          teamName: team?.name || "",
+          to: email,
+          url: verifyUrl,
+        });
 
-      res.status(200).json("Invitation sent again!");
-      return;
+        res.status(200).json("Invitation sent again!");
+        return;
+      } catch (emailError) {
+        console.error("[RESEND_INVITE_API] Failed to send team invite email", {
+          teamId,
+          email,
+          error: emailError instanceof Error ? emailError.message : emailError,
+        });
+
+        return res
+          .status(500)
+          .json(`Invitation updated but email failed to send: ${emailError instanceof Error ? emailError.message : "Unknown error"}`);
+      }
     } catch (error) {
       errorhandler(error, res);
     }
