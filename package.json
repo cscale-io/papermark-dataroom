@@ -184,8 +184,8 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "stripe:webhook": "pkgx stripe listen --forward-to localhost:3000/api/stripe/webhook",
-    "trigger:v3:deploy": "npx trigger.dev@3 deploy",
-    "trigger:v3:dev": "npx trigger.dev@3 dev",
+    "trigger:deploy": "npx trigger.dev@latest deploy",
+    "trigger:dev": "npx trigger.dev@latest dev",
     "vercel-build": "prisma migrate deploy && next build"
   },
   "version": "0.1.0"
