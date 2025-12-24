@@ -53,6 +53,7 @@ export default async function handle(
               "business",
               "datarooms",
               "datarooms-plus",
+              "datarooms-premium",
               "business+old",
               "datarooms+old",
               "datarooms-plus+old",

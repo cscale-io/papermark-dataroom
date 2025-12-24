@@ -151,7 +151,7 @@ export const sendUpgradeOneMonthCheckinEmailTask = task({
       }
 
       if (
-        !["pro", "business", "datarooms", "datarooms-plus"].includes(team.plan)
+        !["pro", "business", "datarooms", "datarooms-plus", "datarooms-premium"].includes(team.plan)
       ) {
         logger.info("Team not on paid plan - no further action", {
           teamId: payload.teamId,
