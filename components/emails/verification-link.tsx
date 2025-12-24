@@ -15,7 +15,7 @@ import {
 import { Footer } from "./shared/footer";
 
 const VerificationLinkEmail = ({
-  url = "https://dataroom.cscale.io",
+  url,
 }: {
   url: string;
 }) => {

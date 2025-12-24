@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getToken } from "next-auth/jwt";
 
+const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
+
 export default async function AppMiddleware(req: NextRequest) {
   const url = req.nextUrl;
   const path = url.pathname;
@@ -9,8 +11,10 @@ export default async function AppMiddleware(req: NextRequest) {
   const token = (await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-    secureCookie: false,
-    cookieName: "next-auth.session-token",
+    secureCookie: VERCEL_DEPLOYMENT,
+    cookieName: VERCEL_DEPLOYMENT
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token",
   })) as {
     email?: string;
     user?: {

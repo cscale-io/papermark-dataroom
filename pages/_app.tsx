@@ -46,12 +46,12 @@ export default function App({
         />
         <meta
           property="og:image"
-          content="https://dataroom.cscale.io/_static/meta-image.png"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/_static/meta-image.png`}
           key="og-image"
         />
         <meta
           property="og:url"
-          content="https://dataroom.cscale.io"
+          content={process.env.NEXT_PUBLIC_BASE_URL}
           key="og-url"
         />
         <meta property="og:type" content="website" />
@@ -66,7 +66,7 @@ export default function App({
         />
         <meta
           name="twitter:image"
-          content="https://dataroom.cscale.io/_static/meta-image.png"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/_static/meta-image.png`}
           key="tw-image"
         />
         <link rel="icon" href="/favicon.ico" key="favicon" />

@@ -19,7 +19,7 @@ export default function TeamInvitation({
   senderName,
   senderEmail,
   teamName,
-  url = "https://dataroom.cscale.io",
+  url,
 }: {
   senderName: string;
   senderEmail: string;

@@ -26,7 +26,46 @@ function getMainDomainUrl(): string {
   if (process.env.NODE_ENV === "development") {
     return process.env.NEXTAUTH_URL || "http://localhost:3000";
   }
-  return process.env.NEXTAUTH_URL || "https://dataroom.cscale.io";
+  return process.env.NEXTAUTH_URL || "http://localhost:3000";
+}
+
+function getCookieDomain(): string | undefined {
+  // In development or without VERCEL_URL, don't set domain (works for localhost)
+  if (!VERCEL_DEPLOYMENT) {
+    return undefined;
+  }
+  
+  // Derive domain from NEXTAUTH_URL
+  const nextAuthUrl = process.env.NEXTAUTH_URL;
+  if (!nextAuthUrl) {
+    return undefined;
+  }
+  
+  try {
+    const url = new URL(nextAuthUrl);
+    const hostname = url.hostname;
+    
+    // Don't set domain for localhost
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return undefined;
+    }
+    
+    // Don't set domain for Vercel preview URLs (public suffix)
+    if (hostname.endsWith(".vercel.app")) {
+      return undefined;
+    }
+    
+    // Extract root domain (e.g., "dataroom.example.com" -> ".example.com")
+    // Only for custom domains where cross-subdomain cookies are needed
+    const parts = hostname.split(".");
+    if (parts.length >= 2) {
+      return "." + parts.slice(-2).join(".");
+    }
+    
+    return undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 // This function can run for a maximum of 180 seconds
@@ -114,7 +153,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: "lax",
         path: "/",
         // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-        domain: VERCEL_DEPLOYMENT ? ".cscale.io" : undefined,
+        domain: getCookieDomain(),
         secure: VERCEL_DEPLOYMENT,
       },
     },
