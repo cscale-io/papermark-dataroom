@@ -105,13 +105,6 @@ export const authOptions: NextAuthOptions = {
     }),
     EmailProvider({
       async sendVerificationRequest({ identifier, url }) {
-        console.log("[Email Auth] sendVerificationRequest triggered", {
-          email: identifier,
-          NODE_ENV: process.env.NODE_ENV,
-          NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-          RESEND_API_KEY_SET: !!process.env.RESEND_API_KEY,
-        });
-
         const hasValidNextAuthUrl = !!process.env.NEXTAUTH_URL;
         let finalUrl = url;
 
@@ -126,12 +119,10 @@ export const authOptions: NextAuthOptions = {
           finalUrl = urlObj.toString();
         }
 
-        console.log("[Email Auth] Calling sendVerificationRequestEmail...");
         await sendVerificationRequestEmail({
           url: finalUrl,
           email: identifier,
         });
-        console.log("[Email Auth] sendVerificationRequestEmail completed");
       },
     }),
     PasskeyProvider({

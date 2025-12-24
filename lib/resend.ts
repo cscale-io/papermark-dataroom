@@ -12,13 +12,6 @@ export const resend = process.env.RESEND_API_KEY
 // Set RESEND_TEST_MODE=true in .env.local to redirect all emails to delivered@resend.dev
 const isTestMode = process.env.RESEND_TEST_MODE === "true";
 
-console.log("[Resend] Module initialized:", {
-  RESEND_API_KEY_SET: !!process.env.RESEND_API_KEY,
-  RESEND_API_KEY_PREFIX: process.env.RESEND_API_KEY?.substring(0, 8) + "...",
-  resendClientCreated: !!resend,
-  RESEND_TEST_MODE: isTestMode,
-});
-
 export const sendEmail = async ({
   to,
   subject,
@@ -46,19 +39,7 @@ export const sendEmail = async ({
   scheduledAt?: string;
   unsubscribeUrl?: string;
 }) => {
-  console.log("[Resend sendEmail] Called with:", {
-    to,
-    subject,
-    test,
-    system,
-    marketing,
-    verify,
-    resendInitialized: !!resend,
-  });
-
   if (!resend) {
-    // Throw an error if resend is not initialized
-    console.error("[Resend sendEmail] FAILED: Resend not initialized - check RESEND_API_KEY");
     throw new Error("Resend not initialized");
   }
 
@@ -79,14 +60,6 @@ export const sendEmail = async ({
 
   // Use env var OR explicit test param to redirect to Resend's test inbox
   const actualRecipient = (isTestMode || test) ? "delivered@resend.dev" : to;
-  
-  console.log("[Resend sendEmail] Preparing to send:", {
-    from: fromAddress,
-    to: actualRecipient,
-    originalTo: to,
-    testMode: isTestMode || test,
-    subject,
-  });
 
   try {
     const { data, error } = await resend.emails.send({
@@ -104,12 +77,6 @@ export const sendEmail = async ({
       },
     });
 
-    console.log("[Resend sendEmail] API Response:", {
-      success: !error,
-      data,
-      error,
-    });
-
     // Check if the email sending operation returned an error and throw it
     if (error) {
       log({
@@ -123,13 +90,11 @@ export const sendEmail = async ({
     // If there's no error, return the data
     return data;
   } catch (exception) {
-    // Log and rethrow any caught exceptions for upstream handling
-    console.error("[Resend sendEmail] Exception caught:", exception);
     log({
       message: `Unexpected error when sending email: ${exception}`,
       type: "error",
       mention: true,
     });
-    throw exception; // Rethrow the caught exception
+    throw exception;
   }
 };
