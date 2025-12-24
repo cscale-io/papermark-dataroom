@@ -143,12 +143,6 @@ export default async function handle(
         res.status(200).json("Invitation sent again!");
         return;
       } catch (emailError) {
-        console.error("[RESEND_INVITE_API] Failed to send team invite email", {
-          teamId,
-          email,
-          error: emailError instanceof Error ? emailError.message : emailError,
-        });
-
         return res
           .status(500)
           .json(`Invitation updated but email failed to send: ${emailError instanceof Error ? emailError.message : "Unknown error"}`);

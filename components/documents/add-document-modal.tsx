@@ -235,7 +235,6 @@ export function AddDocumentModal({
 
     try {
       setUploading(true);
-      console.log("[DEBUG_UPLOAD] handleFileUpload start", { fileName: currentFile.name, fileSize: currentFile.size, fileType: currentFile.type });
 
       let contentType = currentFile.type;
       let supportedFileType = getSupportedContentType(contentType);
@@ -254,7 +253,6 @@ export function AddDocumentModal({
       }
 
       if (!supportedFileType) {
-        console.log("[DEBUG_UPLOAD] handleFileUpload unsupported file type", { contentType });
         setUploading(false);
         toast.error(
           "Unsupported file format. Please upload a PDF, Powerpoint, Excel, Word or image file.",
@@ -262,19 +260,10 @@ export function AddDocumentModal({
         return;
       }
 
-      console.log("[DEBUG_UPLOAD] handleFileUpload calling putFile", { contentType, supportedFileType, teamId });
-      let putFileResult;
-      try {
-        putFileResult = await putFile({
-          file: currentFile,
-          teamId,
-        });
-        console.log("[DEBUG_UPLOAD] handleFileUpload putFile success", { type: putFileResult.type, hasData: !!putFileResult.data, numPages: putFileResult.numPages });
-      } catch (putFileError) {
-        console.error("[DEBUG_UPLOAD] handleFileUpload putFile failed", { error: (putFileError as Error).message, stack: (putFileError as Error).stack });
-        throw putFileError;
-      }
-      const { type, data, numPages, fileSize } = putFileResult;
+      const { type, data, numPages, fileSize } = await putFile({
+        file: currentFile,
+        teamId,
+      });
 
       const documentData: DocumentData = {
         name: currentFile.name,
@@ -286,30 +275,23 @@ export function AddDocumentModal({
       };
       let response: Response | undefined;
       // create a document or new version in the database
-      console.log("[DEBUG_UPLOAD] handleFileUpload creating document record", { newVersion, documentData });
-      try {
-        if (!newVersion) {
-          // create a document in the database
-          response = await createDocument({
-            documentData,
-            teamId,
-            numPages,
-            folderPathName: currentFolderPath?.join("/"),
-          });
-        } else {
-          // create a new version for existing document in the database
-          const documentId = router.query.id as string;
-          response = await createNewDocumentVersion({
-            documentData,
-            documentId,
-            numPages,
-            teamId,
-          });
-        }
-        console.log("[DEBUG_UPLOAD] handleFileUpload document API response", { ok: response?.ok, status: response?.status });
-      } catch (docError) {
-        console.error("[DEBUG_UPLOAD] handleFileUpload document creation failed", { error: (docError as Error).message });
-        throw docError;
+      if (!newVersion) {
+        // create a document in the database
+        response = await createDocument({
+          documentData,
+          teamId,
+          numPages,
+          folderPathName: currentFolderPath?.join("/"),
+        });
+      } else {
+        // create a new version for existing document in the database
+        const documentId = router.query.id as string;
+        response = await createNewDocumentVersion({
+          documentData,
+          documentId,
+          numPages,
+          teamId,
+        });
       }
 
       if (response) {
@@ -395,7 +377,6 @@ export function AddDocumentModal({
     } catch (error) {
       setUploading(false);
       const errorMessage = (error as Error).message || "Unknown error";
-      console.error("[DEBUG_UPLOAD] handleFileUpload error", { message: errorMessage, stack: (error as Error).stack });
       toast.error(`An error occurred while uploading the file: ${errorMessage}`);
     } finally {
       setUploading(false);

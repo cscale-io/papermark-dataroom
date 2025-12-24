@@ -15,40 +15,18 @@ export const sendTeammateInviteEmail = async ({
   to: string;
   url: string;
 }) => {
-  console.log("[TEAM_INVITE] Starting sendTeammateInviteEmail", {
-    to,
-    senderEmail,
-    teamName,
-    urlLength: url?.length,
-    nodeEnv: process.env.NODE_ENV,
+  const result = await sendEmail({
+    to: to,
+    subject: `You are invited to join team`,
+    react: TeamInvitation({
+      senderName,
+      senderEmail,
+      teamName,
+      url,
+    }),
+    test: process.env.NODE_ENV === "development",
+    system: true,
   });
 
-  try {
-    const result = await sendEmail({
-      to: to,
-      subject: `You are invited to join team`,
-      react: TeamInvitation({
-        senderName,
-        senderEmail,
-        teamName,
-        url,
-      }),
-      test: process.env.NODE_ENV === "development",
-      system: true,
-    });
-
-    console.log("[TEAM_INVITE] Email sent successfully", {
-      to,
-      result,
-    });
-
-    return result;
-  } catch (error) {
-    console.error("[TEAM_INVITE] Failed to send email", {
-      to,
-      error: error instanceof Error ? error.message : error,
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-    throw error;
-  }
+  return result;
 };

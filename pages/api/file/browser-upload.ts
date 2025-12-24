@@ -14,7 +14,6 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const body = req.body as HandleUploadBody;
-  console.log("[DEBUG_UPLOAD] browser-upload handler called", { bodyType: body?.type });
 
   try {
     const jsonResponse = await handleUpload({
@@ -22,17 +21,13 @@ export default async function handler(
       request: req,
       onBeforeGenerateToken: async (pathname: string) => {
         // Generate a client token for the browser to upload the file
-        console.log("[DEBUG_UPLOAD] onBeforeGenerateToken", { pathname });
-
         const session = await getServerSession(req, res, authOptions);
         if (!session) {
-          console.log("[DEBUG_UPLOAD] Unauthorized - no session");
           res.status(401).end("Unauthorized");
           throw new Error("Unauthorized");
         }
 
         const userId = (session.user as CustomUser).id;
-        console.log("[DEBUG_UPLOAD] Authenticated user", { userId });
         const team = await prisma.team.findFirst({
           where: {
             users: {
@@ -55,7 +50,6 @@ export default async function handler(
           maxSize = 100 * 1024 * 1024; // 100 MB
         }
 
-        console.log("[DEBUG_UPLOAD] Returning token config", { maxSize, pathname, allowedContentTypes: SUPPORTED_DOCUMENT_MIME_TYPES.length });
         return {
           addRandomSuffix: true,
           allowedContentTypes: SUPPORTED_DOCUMENT_MIME_TYPES,
@@ -67,7 +61,6 @@ export default async function handler(
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        console.log("[DEBUG_UPLOAD] onUploadCompleted", { blobUrl: blob.url });
         // Get notified of browser upload completion
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
@@ -82,10 +75,8 @@ export default async function handler(
       },
     });
 
-    console.log("[DEBUG_UPLOAD] Handler success", { responseKeys: Object.keys(jsonResponse || {}) });
     return res.status(200).json(jsonResponse);
   } catch (error) {
-    console.error("[DEBUG_UPLOAD] Handler error", { error: (error as Error).message, stack: (error as Error).stack });
     // The webhook will retry 5 times waiting for a 200
     return res.status(400).json({ error: (error as Error).message });
   }

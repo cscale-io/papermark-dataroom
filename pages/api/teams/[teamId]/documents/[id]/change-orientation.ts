@@ -12,13 +12,10 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  console.log("[DEBUG_API] change-orientation.ts called", { method: req.method, teamId: req.query.teamId, docId: req.query.id });
-  
   if (req.method === "POST") {
     // POST /api/teams/:teamId/documents/:id/change-orientation
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
-      console.log("[DEBUG_API] change-orientation.ts unauthorized - no session");
       return res.status(401).end("Unauthorized");
     }
 
@@ -29,7 +26,6 @@ export default async function handle(
     };
 
     const userId = (session.user as CustomUser).id;
-    console.log("[DEBUG_API] change-orientation.ts params", { teamId, docId, versionId, isVertical, userId });
 
     try {
       const team = await prisma.team.findUnique({
@@ -54,11 +50,9 @@ export default async function handle(
       });
 
       if (!team) {
-        console.log("[DEBUG_API] change-orientation.ts team not found", { teamId, userId });
         return res.status(401).end("Unauthorized");
       }
 
-      console.log("[DEBUG_API] change-orientation.ts updating version", { versionId, isVertical });
       await prisma.documentVersion.update({
         where: {
           id: versionId,
@@ -72,12 +66,10 @@ export default async function handle(
         `${process.env.NEXTAUTH_URL}/api/revalidate?secret=${process.env.REVALIDATE_TOKEN}&documentId=${docId}`,
       );
 
-      console.log("[DEBUG_API] change-orientation.ts success");
       return res.status(200).json({
         message: `Document orientation changed to ${isVertical ? "portrait" : "landscape"}!`,
       });
     } catch (error) {
-      console.error("[DEBUG_API] change-orientation.ts error", { error: (error as Error).message, stack: (error as Error).stack });
       return errorhandler(error, res);
     }
   } else {

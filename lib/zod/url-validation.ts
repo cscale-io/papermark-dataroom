@@ -107,7 +107,6 @@ const createFilePathValidator = () => {
             if (!isVercelBlob && process.env.VERCEL_BLOB_HOST) {
               isVercelBlob = hostname.includes(process.env.VERCEL_BLOB_HOST);
             }
-            console.log("[DEBUG_UPLOAD] filePathSchema URL check", { hostname, isNotionSite, isValidNotionDomain, isVercelBlob });
 
             // If it's not a standard Notion domain or Vercel blob, check if it's a custom Notion domain
             if (!isNotionSite && !isValidNotionDomain && !isVercelBlob) {
@@ -361,7 +360,6 @@ export const documentUploadSchema = z
               (process.env.VERCEL_BLOB_HOST ? hostname.includes(process.env.VERCEL_BLOB_HOST) : false);
             
             if (isVercelBlob) {
-              console.log("[DEBUG_UPLOAD] storageType validation: valid Vercel Blob URL", { hostname });
               return true;
             }
 
@@ -379,7 +377,6 @@ export const documentUploadSchema = z
             try {
               return await isCustomNotionDomain(data.url);
             } catch {
-              console.log("[DEBUG_UPLOAD] storageType validation: unknown URL type", { hostname });
               return false;
             }
           } catch {

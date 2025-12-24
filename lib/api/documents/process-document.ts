@@ -277,13 +277,9 @@ export const processDocument = async ({
     }
   } catch (triggerError) {
     // Log but don't fail document creation if Trigger.dev is not configured
-    console.warn(
-      "[DEBUG_UPLOAD] Trigger.dev task failed (TRIGGER_SECRET_KEY may not be set):",
-      (triggerError as Error).message,
-    );
     log({
       message: `Trigger.dev conversion task skipped for document ${document.id}: ${(triggerError as Error).message}`,
-      type: "warning",
+      type: "info",
     });
   }
 
