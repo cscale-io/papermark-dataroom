@@ -1,3 +1,16 @@
+// Disabled: Edge Function size exceeds 1MB limit due to font files
+// To re-enable, uncomment the code below and switch runtime to "nodejs" or remove fonts
+
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json(
+    { error: "This endpoint is temporarily disabled" },
+    { status: 503 },
+  );
+}
+
+/*
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
@@ -26,7 +39,6 @@ export async function GET(req: NextRequest) {
         tw="flex bg-black w-full h-full items-center justify-between"
         style={{ padding: "48px" }}
       >
-        {/* Left Side Text */}
         <div tw="flex flex-col text-white" style={{ marginLeft: "48px" }}>
           <div tw="flex text-7xl font-bold mb-4 tracking-tighter">
             Papermark
@@ -35,7 +47,6 @@ export async function GET(req: NextRequest) {
           <div tw="flex text-7xl font-bold">{year}</div>
         </div>
 
-        {/* Ticket Container */}
         <div
           tw="flex flex-col bg-[#fb7a00] rounded-3xl relative overflow-hidden justify-between"
           style={{
@@ -46,14 +57,12 @@ export async function GET(req: NextRequest) {
             border: "1px solid rgba(255, 255, 255, 0.1)",
           }}
         >
-          {/* Header Section */}
           <div tw="flex items-start p-8 items-center">
             <div tw="flex text-2xl font-bold text-white tracking-tighter">
               Papermark
             </div>
           </div>
 
-          {/* Main Content */}
           <div tw="flex flex-col p-8 border-t border-white/20 h-[240px] justify-center">
             <div tw="flex text-7xl font-bold text-white mb-2">
               {minutesSpentOnDocs}
@@ -63,12 +72,10 @@ export async function GET(req: NextRequest) {
             </div>
           </div>
 
-          {/* Year */}
           <div tw="flex p-8 text-xl text-white/80 border-t border-white/20 items-center">
             {year}
           </div>
 
-          {/* Footer */}
           <div tw="flex p-8 text-sm text-white/60 border-t border-white/20 items-center">
             YEAR IN REVIEW
           </div>
@@ -98,3 +105,4 @@ export async function GET(req: NextRequest) {
     },
   );
 }
+*/
