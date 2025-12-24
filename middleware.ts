@@ -51,29 +51,18 @@ export const config = {
 export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
   const path = req.nextUrl.pathname;
   const host = req.headers.get("host");
-  const webhookHost = process.env.NEXT_PUBLIC_WEBHOOK_BASE_HOST;
-  const vercelUrl = process.env.VERCEL_URL;
-  const nodeEnv = process.env.NODE_ENV;
-
-  console.log(`[MW] === MIDDLEWARE START ===`);
-  console.log(`[MW] path=${path}, host=${host}`);
-  console.log(`[MW] env: NODE_ENV=${nodeEnv}, VERCEL_URL=${vercelUrl}, WEBHOOK_HOST=${webhookHost}`);
-  console.log(`[MW] checks: isWebhook=${isWebhookPath(host)}, isCustomDomain=${isCustomDomain(host || "")}, isAnalytics=${isAnalyticsPath(path)}`);
 
   if (isAnalyticsPath(path)) {
-    console.log(`[MW] Routing to PostHogMiddleware`);
     return PostHogMiddleware(req);
   }
 
   // Handle incoming webhooks
   if (isWebhookPath(host)) {
-    console.log(`[MW] Routing to IncomingWebhookMiddleware`);
     return IncomingWebhookMiddleware(req);
   }
 
   // For custom domains, we need to handle them differently
   if (isCustomDomain(host || "")) {
-    console.log(`[MW] Routing to DomainMiddleware`);
     return DomainMiddleware(req);
   }
 
@@ -83,7 +72,6 @@ export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
     !path.startsWith("/verify") &&
     !path.startsWith("/unsubscribe")
   ) {
-    console.log(`[MW] Routing to AppMiddleware`);
     return AppMiddleware(req);
   }
 
