@@ -161,15 +161,44 @@ export default async function handle(
 
       const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify/invitation?token=${jwtToken}`;
 
-      sendTeammateInviteEmail({
-        senderName: sender.name || "",
-        senderEmail: sender.email || "",
-        teamName: team?.name || "",
-        to: email,
-        url: verifyUrl,
+      console.log("[INVITE_API] About to send team invite email", {
+        teamId,
+        email,
+        senderName: sender.name,
+        senderEmail: sender.email,
+        teamName: team?.name,
+        verifyUrl,
+        baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
       });
 
-      return res.status(200).json("Invitation sent!");
+      try {
+        await sendTeammateInviteEmail({
+          senderName: sender.name || "",
+          senderEmail: sender.email || "",
+          teamName: team?.name || "",
+          to: email,
+          url: verifyUrl,
+        });
+
+        console.log("[INVITE_API] Team invite email sent successfully", {
+          teamId,
+          email,
+        });
+
+        return res.status(200).json("Invitation sent!");
+      } catch (emailError) {
+        console.error("[INVITE_API] Failed to send team invite email", {
+          teamId,
+          email,
+          error: emailError instanceof Error ? emailError.message : emailError,
+          stack: emailError instanceof Error ? emailError.stack : undefined,
+        });
+
+        // Return error to client so they know email failed
+        return res
+          .status(500)
+          .json(`Invitation created but email failed to send: ${emailError instanceof Error ? emailError.message : "Unknown error"}`);
+      }
     } catch (error) {
       errorhandler(error, res);
     }
