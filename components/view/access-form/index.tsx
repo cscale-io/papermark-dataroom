@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { Brand, CustomField, DataroomBrand } from "@prisma/client";
-import { ArrowUpRightIcon } from "lucide-react";
 
 import { determineTextColor } from "@/lib/utils/determine-text-color";
 
@@ -209,27 +208,14 @@ export default function AccessForm({
       {!useCustomAccessForm ? (
         <div className="flex flex-col items-center gap-0.5">
           <p className="text-center text-sm tracking-tight text-gray-500">
-            This document is securely shared with you using{" "}
+            This document shared by{" "}
             <a
-              href="https://www.papermark.com/home"
+              href="https://cscale.io"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium hover:text-gray-600"
             >
-              Papermark
-            </a>
-            .
-          </p>
-          <p className="text-center text-sm tracking-tight text-gray-500">
-            See how we protect your data in our{" "}
-            <a
-              href={`${process.env.NEXT_PUBLIC_MARKETING_URL}/privacy`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-0.5 hover:text-gray-600"
-            >
-              <span>Privacy Policy</span>
-              <ArrowUpRightIcon className="h-3 w-3" />
+              C.Scale
             </a>
           </p>
         </div>

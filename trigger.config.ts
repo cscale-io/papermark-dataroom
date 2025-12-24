@@ -6,6 +6,7 @@ export default defineConfig({
   project: "proj_cyydwifpmtggiobpzmko",
   dirs: ["./lib/trigger"],
   maxDuration: timeout.None, // no max duration
+  machine: "small-1x",
   retries: {
     enabledInDev: false,
     default: {

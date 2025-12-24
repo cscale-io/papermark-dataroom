@@ -49,14 +49,14 @@ export const sendEmail = async ({
   const fromAddress =
     from ??
     (marketing
-      ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
+      ? "C.Scale Data Room <dataroom@updates.cscale.io>"
       : system
-        ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
+        ? "C.Scale Data Room <dataroom@updates.cscale.io>"
         : verify
-          ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
+          ? "C.Scale Data Room <dataroom@updates.cscale.io>"
           : !!scheduledAt
-            ? "C.Scale DataRoom <dataroom@updates.cscale.io>"
-            : "C.Scale DataRoom <dataroom@updates.cscale.io>");
+            ? "C.Scale Data Room <dataroom@updates.cscale.io>"
+            : "C.Scale Data Room <dataroom@updates.cscale.io>");
 
   // Use env var OR explicit test param to redirect to Resend's test inbox
   const actualRecipient = (isTestMode || test) ? "delivered@resend.dev" : to;

@@ -47,7 +47,6 @@ import {
 import { Button } from "../ui/button";
 import { AnnotationToggle } from "./annotations/annotation-toggle";
 import { ConversationSidebar } from "./conversations/sidebar";
-import ReportForm from "./report-form";
 
 export type TNavData = {
   linkId: string;
@@ -464,13 +463,6 @@ export default function Nav({
                 </span>
               </div>
             ) : null}
-            {/* add a separator that doesn't use radix or shadcn  */}
-            <div className="h-6 w-px bg-gray-800" />
-            <ReportForm
-              linkId={linkId}
-              documentId={documentId}
-              viewId={viewId}
-            />
           </div>
         </div>
       </div>

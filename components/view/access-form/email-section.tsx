@@ -145,8 +145,8 @@ export default function EmailSection({
       )}
       <p className="text-sm text-gray-500">
         {useCustomAccessForm
-          ? "This data will be shared with the content provider."
-          : "This data will be shared with the sender."}
+          ? "This data will be shared with C.Scale."
+          : "This data will be shared with C.Scale."}
       </p>
     </div>
   );
