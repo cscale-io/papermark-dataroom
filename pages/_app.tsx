@@ -27,6 +27,7 @@ export default function App({
     <>
       <Head>
         <title>C.Scale Data Room</title>
+        <meta name="robots" content="noindex, nofollow" />
         <meta name="theme-color" content="#000000" />
         <meta
           name="description"

@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://dataroom.cscale.io"),
   title: data.title,
   description: data.description,
+  robots: {
+    index: false,
+    follow: false,
+  },
   openGraph: {
     title: data.title,
     description: data.description,

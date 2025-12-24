@@ -8,6 +8,7 @@ export type TPlanLimits = {
   datarooms: number;
   customDomainOnPro: boolean;
   customDomainInDataroom: boolean;
+  conversationsInDataroom: boolean;
   advancedLinkControlsOnPro: boolean | null;
   watermarkOnBusiness?: boolean | null;
   agreementOnBusiness?: boolean | null;
@@ -21,6 +22,7 @@ export const FREE_PLAN_LIMITS = {
   datarooms: 0,
   customDomainOnPro: false,
   customDomainInDataroom: false,
+  conversationsInDataroom: false,
   advancedLinkControlsOnPro: false,
 };
 
@@ -32,6 +34,7 @@ export const PRO_PLAN_LIMITS = {
   datarooms: 0,
   customDomainOnPro: false,
   customDomainInDataroom: false,
+  conversationsInDataroom: false,
   advancedLinkControlsOnPro: false,
 };
 
@@ -43,6 +46,7 @@ export const BUSINESS_PLAN_LIMITS = {
   datarooms: 100,
   customDomainOnPro: true,
   customDomainInDataroom: false,
+  conversationsInDataroom: false,
   advancedLinkControlsOnPro: false,
   fileSizeLimits: {
     maxFiles: 500,
@@ -57,6 +61,7 @@ export const DATAROOMS_PLAN_LIMITS = {
   datarooms: 100,
   customDomainOnPro: true,
   customDomainInDataroom: true,
+  conversationsInDataroom: false,
   advancedLinkControlsOnPro: false,
   fileSizeLimits: {
     maxFiles: 1000,
