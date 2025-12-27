@@ -149,7 +149,7 @@ export default function AccessForm({
           >
             {linkWelcomeMessage ||
               (brand && "welcomeMessage" in brand && brand.welcomeMessage) ||
-              "Your action is requested to continue"}
+              "Enter your information to continue"}
           </h1>
         </div>
 
@@ -208,7 +208,7 @@ export default function AccessForm({
       {!useCustomAccessForm ? (
         <div className="flex flex-col items-center gap-0.5">
           <p className="text-center text-sm tracking-tight text-gray-500">
-            This document shared by{" "}
+            Shared by{" "}
             <a
               href="https://cscale.io"
               target="_blank"
@@ -216,6 +216,22 @@ export default function AccessForm({
               className="font-medium hover:text-gray-600"
             >
               C.Scale
+            </a>
+            {" · Built on "}
+            <a
+              href="https://papermark.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium hover:text-gray-600"
+            >
+              Papermark
+            </a>
+            {" · Source Code on "}
+            <a
+              href="mailto:hi@cscale.io"
+              className="font-medium hover:text-gray-600"
+            >
+              Request
             </a>
           </p>
         </div>

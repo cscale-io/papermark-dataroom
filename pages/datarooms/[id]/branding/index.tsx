@@ -48,7 +48,7 @@ export default function DataroomBrandPage() {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [bannerBlobUrl, setBannerBlobUrl] = useState<string | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState<string>(
-    "Your action is requested to continue",
+    "Enter your information to continue",
   );
   const [debouncedBrandColor] = useDebounce(brandColor, 300);
   const [debouncedAccentColor] = useDebounce(accentColor, 300);
@@ -155,7 +155,7 @@ export default function DataroomBrandPage() {
       const message =
         dataroomBrand?.welcomeMessage ||
         globalBrand?.welcomeMessage ||
-        "Your action is requested to continue";
+        "Enter your information to continue";
       setWelcomeMessage(message);
       // Validate existing message
       const error = validateWelcomeMessage(message);
@@ -213,7 +213,7 @@ export default function DataroomBrandPage() {
 
     const data = {
       welcomeMessage:
-        welcomeMessage.trim() || "Your action is requested to continue",
+        welcomeMessage.trim() || "Enter your information to continue",
       brandColor: brandColor,
       accentColor: accentColor,
       logo: blobUrl,
@@ -689,7 +689,7 @@ export default function DataroomBrandPage() {
                       onChange={(e) =>
                         handleWelcomeMessageChange(e.target.value)
                       }
-                      placeholder="Your action is requested to continue"
+                      placeholder="Enter your information to continue"
                       className={cn(
                         "min-h-24 resize-none",
                         welcomeMessageError &&

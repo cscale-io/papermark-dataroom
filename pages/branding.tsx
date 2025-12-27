@@ -45,7 +45,7 @@ export default function Branding() {
   const [banner, setBanner] = useState<string | null>(null);
   const [bannerBlobUrl, setBannerBlobUrl] = useState<string | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState<string>(
-    "Your action is requested to continue",
+    "Enter your information to continue",
   );
   const [debouncedBrandColor] = useDebounce(brandColor, 300);
   const [debouncedAccentColor] = useDebounce(accentColor, 300);
@@ -148,7 +148,7 @@ export default function Branding() {
       setLogo(brand.logo || null);
       setBanner(brand.banner || null);
       const message =
-        brand.welcomeMessage || "Your action is requested to continue";
+        brand.welcomeMessage || "Enter your information to continue";
       setWelcomeMessage(message);
       // Validate existing message
       const error = validateWelcomeMessage(message);
@@ -193,7 +193,7 @@ export default function Branding() {
 
     const data = {
       welcomeMessage:
-        welcomeMessage.trim() || "Your action is requested to continue",
+        welcomeMessage.trim() || "Enter your information to continue",
       brandColor: brandColor,
       accentColor: accentColor,
       logo: logoBlobUrl,
@@ -241,7 +241,7 @@ export default function Branding() {
       setBanner(null);
       setBrandColor("#000000");
       setAccentColor("#030712");
-      setWelcomeMessage("Your action is requested to continue");
+      setWelcomeMessage("Enter your information to continue");
       setWelcomeMessageError(null);
       setIsLoading(false);
       toast.success("Branding reset successfully");
@@ -684,7 +684,7 @@ export default function Branding() {
                         onChange={(e) =>
                           handleWelcomeMessageChange(e.target.value)
                         }
-                        placeholder="Your action is requested to continue"
+                        placeholder="Enter your information to continue"
                         className={cn(
                           "min-h-24 resize-none",
                           welcomeMessageError &&

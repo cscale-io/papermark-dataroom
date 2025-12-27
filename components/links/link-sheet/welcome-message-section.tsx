@@ -89,7 +89,7 @@ export function WelcomeMessageSection({
               id="welcome-message"
               value={welcomeMessage || ""}
               onChange={(e) => handleWelcomeMessageChange(e.target.value)}
-              placeholder="Your action is requested to continue"
+              placeholder="Enter your information to continue"
               className={cn(
                 "min-h-24 resize-none",
                 welcomeMessageError &&

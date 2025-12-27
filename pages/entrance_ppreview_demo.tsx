@@ -24,7 +24,7 @@ export default function ViewPage() {
               color: determineTextColor(accentColor),
             }}
           >
-            {welcomeMessage || "Your action is requested to continue"}
+            {welcomeMessage || "Enter your information to continue"}
           </h1>
         </div>
 
