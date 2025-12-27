@@ -17,12 +17,12 @@ import { NextRequest } from "next/server";
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
-  const inter = await fetch(
-    new URL("@/styles/Inter-Regular.ttf", import.meta.url),
+  const circularBook = await fetch(
+    new URL("@/public/fonts/CircularStd-Book.otf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
-  const interBold = await fetch(
-    new URL("@/public/_static/Inter-Bold.ttf", import.meta.url),
+  const circularBold = await fetch(
+    new URL("@/public/fonts/CircularStd-Bold.otf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   const year = req.nextUrl.searchParams.get("year") || "2024";
@@ -90,14 +90,14 @@ export async function GET(req: NextRequest) {
       },
       fonts: [
         {
-          name: "Inter",
-          data: inter,
+          name: "Circular",
+          data: circularBook,
           weight: 400,
           style: "normal",
         },
         {
-          name: "Inter",
-          data: interBold,
+          name: "Circular",
+          data: circularBold,
           weight: 700,
           style: "normal",
         },
