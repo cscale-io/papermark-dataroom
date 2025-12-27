@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 const data = {
   description: "Verify login to Papermark",
-  title: "Verify | Papermark",
+  title: "Verify | C.Scale Data Room",
   url: "/verify",
 };
 
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: data.title,
     description: data.description,
     url: data.url,
-    siteName: "Papermark",
+    siteName: "C.Scale Data Room",
     images: [
       {
         url: "/_static/meta-image.png",

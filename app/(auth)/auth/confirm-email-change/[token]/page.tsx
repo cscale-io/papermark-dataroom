@@ -21,7 +21,7 @@ export const runtime = "nodejs";
 
 const data = {
   description: "Confirm email change",
-  title: "Confirm email change | Papermark",
+  title: "Confirm email change | C.Scale Data Room",
   url: "/auth/confirm-email-change",
 };
 
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: data.title,
     description: data.description,
     url: data.url,
-    siteName: "Papermark",
+    siteName: "C.Scale Data Room",
     images: [
       {
         url: "/_static/meta-image.png",

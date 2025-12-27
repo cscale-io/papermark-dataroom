@@ -14,7 +14,7 @@ import CleanUrlOnExpire from "./status/ClientRedirect";
 
 const data = {
   description: "Accept your team invitation on Papermark",
-  title: "Accept Invitation | Papermark",
+  title: "Accept Invitation | C.Scale Data Room",
   url: "/verify/invitation",
 };
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: data.title,
     description: data.description,
     url: data.url,
-    siteName: "Papermark",
+    siteName: "C.Scale Data Room",
     images: [
       {
         url: "/_static/meta-image.png",

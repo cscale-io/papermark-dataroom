@@ -5,8 +5,8 @@ import { GTMComponent } from "@/components/gtm-component";
 import LoginClient from "./page-client";
 
 const data = {
-  description: "Login to Papermark",
-  title: "Login | Papermark",
+  description: "Login to C.Scale Data Room",
+  title: "Login | C.Scale Data Room",
   url: "/login",
 };
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: data.title,
     description: data.description,
     url: data.url,
-    siteName: "Papermark",
+    siteName: "C.Scale Data Room",
     images: [
       {
         url: "/_static/meta-image.png",
