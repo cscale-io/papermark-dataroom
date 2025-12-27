@@ -24,7 +24,6 @@ export default async function DomainMiddleware(req: NextRequest) {
   // Rewrite the URL to the correct page component for custom domains
   // Rewrite to the pages/view/domains/[domain]/[slug] route
   const rewritePath = `/view/domains/${host}${path}`;
-  console.log(`[DomainMW] Rewriting to ${rewritePath}`);
   url.pathname = rewritePath;
 
   return NextResponse.rewrite(url, {

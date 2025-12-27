@@ -241,7 +241,6 @@ const getAuthOptions = (req: NextApiRequest): NextAuthOptions => {
             where: { email: user.email },
           });
           if (!existingUser) {
-            console.log(`[Auth] Blocked new user registration in production: ${user.email}`);
             return false;
           }
         }
