@@ -6,11 +6,8 @@ export default async function DomainMiddleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const host = req.headers.get("host");
 
-  console.log(`[DomainMW] path=${path}, host=${host}`);
-
   // If it's the root path, redirect to dashboard
   if (path === "/") {
-    console.log(`[DomainMW] Root path, redirecting to /dashboard`);
     return NextResponse.redirect(
       new URL("/dashboard", req.url),
     );
@@ -20,7 +17,6 @@ export default async function DomainMiddleware(req: NextRequest) {
 
   // Check for blocked pathnames
   if (BLOCKED_PATHNAMES.includes(path) || path.includes(".")) {
-    console.log(`[DomainMW] Blocked pathname, returning 404`);
     url.pathname = "/404";
     return NextResponse.rewrite(url, { status: 404 });
   }
