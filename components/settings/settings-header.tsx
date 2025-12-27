@@ -56,11 +56,6 @@ export function SettingsHeader() {
             segment: "webhooks",
           },
           {
-            label: "Slack",
-            href: `/settings/slack`,
-            segment: "slack",
-          },
-          {
             label: "AI",
             href: `/settings/ai`,
             segment: "ai",
@@ -77,11 +72,6 @@ export function SettingsHeader() {
             href: `/settings/incoming-webhooks`,
             segment: "incoming-webhooks",
             disabled: !features?.incomingWebhooks,
-          },
-          {
-            label: "Billing",
-            href: `/settings/billing`,
-            segment: "billing",
           },
         ]}
       />

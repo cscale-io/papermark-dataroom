@@ -195,16 +195,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/settings/webhooks",
             current: router.pathname.includes("settings/webhooks"),
           },
-          {
-            title: "Slack",
-            url: "/settings/slack",
-            current: router.pathname.includes("settings/slack"),
-          },
-          {
-            title: "Billing",
-            url: "/settings/billing",
-            current: router.pathname.includes("settings/billing"),
-          },
         ],
       },
     ],
@@ -291,10 +281,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div>
               {/*
                * Show Slack banner to all users if they haven't dismissed it and don't have Slack connected
+               * HIDDEN: Slack banner disabled
                */}
-              {!slackIntegration && showSlackBanner ? (
-                <SlackBanner setShowSlackBanner={setShowSlackBanner} />
-              ) : null}
               {/*
                * if user is free and showProBanner is true show pro banner
                */}
