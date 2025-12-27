@@ -327,7 +327,7 @@ async function exportDocumentVisits(
           viewId: view.id,
         });
 
-        if (!result || result.rows === 0) {
+        if (!result || result.data.length === 0) {
           return getViewUserAgent_v2({
             documentId: docId,
             viewId: view.id,
@@ -700,7 +700,7 @@ async function exportDataroomVisits(
         viewId: docView.id,
       });
 
-      if (!result || result.rows === 0) {
+      if (!result || result.data.length === 0) {
         return getViewUserAgent_v2({
           documentId: docView.document?.id || "null",
           viewId: docView.id,

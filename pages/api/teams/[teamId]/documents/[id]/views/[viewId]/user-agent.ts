@@ -70,7 +70,7 @@ export default async function handle(
         viewId: viewId,
       });
 
-      if (!userAgent || userAgent.rows === 0) {
+      if (!userAgent || userAgent.data.length === 0) {
         userAgent = await getViewUserAgent_v2({
           documentId: docId,
           viewId: viewId,
