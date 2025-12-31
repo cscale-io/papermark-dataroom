@@ -64,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={circularStd.variable}>
       <body className={circularStd.className}>{children}</body>
     </html>
   );

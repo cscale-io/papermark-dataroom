@@ -62,7 +62,7 @@ export function Modal({
         <Drawer.Portal>
           <Drawer.Content
             className={cn(
-              "fixed bottom-0 left-0 right-0 z-50 mt-24 rounded-t-[10px] border-t border-gray-200 bg-background dark:border-gray-800 dark:bg-gray-900",
+              "fixed bottom-0 left-0 right-0 z-50 mt-24 rounded-t-[10px] border-t border-gray-200 bg-background dark:border-gray-800 dark:bg-gray-900 font-sans",
               className,
             )}
           >
@@ -99,7 +99,7 @@ export function Modal({
           onOpenAutoFocus={(e) => e.preventDefault()}
           onCloseAutoFocus={(e) => e.preventDefault()}
           className={cn(
-            "fixed inset-0 z-50 m-auto max-h-fit w-full max-w-md animate-scale-in overflow-hidden border border-gray-200 bg-background p-0 shadow-xl dark:border-gray-800 dark:bg-gray-900 sm:rounded-lg",
+            "fixed inset-0 z-50 m-auto max-h-fit w-full max-w-md animate-scale-in overflow-hidden border border-gray-200 bg-background p-0 shadow-xl dark:border-gray-800 dark:bg-gray-900 sm:rounded-lg font-sans",
             className,
           )}
         >

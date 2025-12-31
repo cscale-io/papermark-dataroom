@@ -34,7 +34,8 @@ export function getHierarchicalDisplayName(
 
 /**
  * CSS class for tabular numbers styling
+ * Note: Removed tabular-nums to prevent extra spacing between characters
  */
 export const HIERARCHICAL_DISPLAY_STYLE = {
-  fontVariantNumeric: "tabular-nums" as const,
+  // fontVariantNumeric: "tabular-nums" as const,
 };
