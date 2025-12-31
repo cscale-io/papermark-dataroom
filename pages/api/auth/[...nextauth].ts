@@ -235,16 +235,6 @@ const getAuthOptions = (req: NextApiRequest): NextAuthOptions => {
           return false;
         }
 
-        // Block new user registration in production (allow in development)
-        if (process.env.NODE_ENV !== "development") {
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
-          });
-          if (!existingUser) {
-            return false;
-          }
-        }
-
         // Apply rate limiting for signin attempts
         try {
           if (req) {
