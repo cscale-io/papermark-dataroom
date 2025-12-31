@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
 import localFont from "next/font/local";
 import Head from "next/head";
+import React from "react";
 
 import { TeamProvider } from "@/context/team-context";
 import type { Session } from "next-auth";
@@ -37,6 +38,11 @@ export default function App({
   pageProps: { session, ...pageProps },
   router,
 }: AppProps<{ session: Session }>) {
+  // Apply font variable to document root on mount
+  React.useEffect(() => {
+    document.documentElement.classList.add(circularStd.variable);
+  }, []);
+
   return (
     <>
       <Head>

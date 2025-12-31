@@ -33,9 +33,8 @@ export function getHierarchicalDisplayName(
 }
 
 /**
- * CSS class for tabular numbers styling
- * Note: Removed tabular-nums to prevent extra spacing between characters
+ * Style object for hierarchical display names.
+ * Previously contained fontVariantNumeric: "tabular-nums" which caused
+ * extra spacing between characters. Now empty but kept for future use.
  */
-export const HIERARCHICAL_DISPLAY_STYLE = {
-  // fontVariantNumeric: "tabular-nums" as const,
-};
+export const HIERARCHICAL_DISPLAY_STYLE = {};
