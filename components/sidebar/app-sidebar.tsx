@@ -121,7 +121,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           !router.pathname.includes("datarooms"),
       },
       {
-        title: "All Datarooms",
+        title: "All Data Rooms",
         url: "/datarooms",
         icon: ServerIcon,
         current: router.pathname === "/datarooms",

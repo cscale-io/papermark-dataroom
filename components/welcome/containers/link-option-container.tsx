@@ -125,7 +125,7 @@ export function LinkOptionContainer({
         >
           {showLinkSettings
             ? currentDataroomId
-              ? "Configure your dataroom link"
+              ? "Configure your Data Room link"
               : "Configure your document link"
             : currentDataroomId
               ? "Securely share your unique dataroom link"

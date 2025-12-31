@@ -193,7 +193,7 @@ export default function UploadSection({
     <div className="pb-5">
       <LinkItem
         title="Enable file requests"
-        tooltipContent="Visitors can upload files to the dataroom."
+        tooltipContent="Visitors can upload files to the Data Room."
         enabled={enabled}
         action={handleUpload}
         isAllowed={isAllowed}

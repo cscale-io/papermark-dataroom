@@ -152,7 +152,7 @@ function RemoveDataroomItemsModal({
           {folderIds.length > 0 && (
             <p>
               <strong>Folders Info</strong>: This will remove the folder and its
-              contents from this dataroom. The original documents will remain in
+              contents from this Data Room. The original documents will remain in
               your workspace.
             </p>
           )}

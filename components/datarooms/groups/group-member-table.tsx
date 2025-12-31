@@ -382,7 +382,7 @@ export default function GroupMemberTable({
             }
           }}
           dataroomId={dataroomId}
-          dataroomName={dataroom?.name ?? "this dataroom"}
+          dataroomName={dataroom?.name ?? "this Data Room"}
           groupId={groupId}
           defaultEmails={uninvitedEmails}
           onSuccess={() => {

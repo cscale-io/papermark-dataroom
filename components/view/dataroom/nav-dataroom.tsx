@@ -51,7 +51,7 @@ export default function DataroomNav({
 
   const downloadDataroom = async () => {
     if (isPreview) {
-      toast.error("You cannot download datarooms in preview mode.");
+      toast.error("You cannot download Data Rooms in preview mode.");
       return;
     }
     if (!allowDownload) return;
@@ -173,7 +173,7 @@ export default function DataroomNav({
               </Button>
             )}
             {allowDownload && allowBulkDownload ? (
-              <ButtonTooltip content="Download Dataroom">
+              <ButtonTooltip content="Download Data Room">
                 <Button
                   onClick={downloadDataroom}
                   className="m-1 bg-gray-900 text-white hover:bg-gray-900/80"

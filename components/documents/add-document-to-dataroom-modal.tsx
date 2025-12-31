@@ -76,10 +76,10 @@ export function AddToDataroomModal({
         return;
       }
 
-      toast.success("Document added to dataroom successfully!");
+      toast.success("Document added to Data Room successfully!");
     } catch (error) {
       console.error("Error adding document to dataroom", error);
-      toast.error("Failed to add document to dataroom. Try again.");
+      toast.error("Failed to add document to Data Room. Try again.");
     } finally {
       setLoading(false);
       setOpen(false);
@@ -99,7 +99,7 @@ export function AddToDataroomModal({
         </DialogHeader>
         <Select onValueChange={(value) => setSelectedDataroom(value)}>
           <SelectTrigger className="w-[380px] max-w-full [&>span]:max-w-full [&>span]:overflow-hidden [&>span]:truncate [&>span]:text-ellipsis [&>span]:whitespace-nowrap">
-            <SelectValue placeholder="Select a dataroom" />
+            <SelectValue placeholder="Select a Data Room" />
           </SelectTrigger>
           <SelectContent className="w-[380px] max-w-[90vw]">
             {datarooms?.map((dataroom) => (
@@ -128,7 +128,7 @@ export function AddToDataroomModal({
               disabled={!selectedDataroom}
             >
               {!selectedDataroom ? (
-                "Select a dataroom"
+                "Select a Data Room"
               ) : (
                 <span className="flex w-full max-w-[350px] items-center justify-center truncate">
                   Add to

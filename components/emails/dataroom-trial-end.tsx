@@ -49,7 +49,7 @@ const DataroomTrialEnd = ({ name }: DataroomTrialEnd) => {
               to:
             </Text>
             <ul className="list-inside list-disc text-sm">
-              <li>Create new datarooms</li>
+              <li>Create new Data Rooms</li>
               <li>
                 Upload <strong>large</strong> files
               </li>

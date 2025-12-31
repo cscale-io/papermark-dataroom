@@ -109,14 +109,14 @@ export default function DataroomTrial() {
         companySize,
         dataroomId,
       });
-      toast.success("Dataroom successfully created! 🎉");
+      toast.success("Data Room successfully created! 🎉");
 
       await mutate(`/api/teams/${teamInfo?.currentTeam?.id}/datarooms`);
 
       // Navigate to dataroom choice page (scratch vs templates)
       router.push(`/welcome?type=dataroom-choice&dataroomId=${dataroomId}`);
     } catch (error) {
-      toast.error("Error adding dataroom. Please try again.");
+      toast.error("Error adding Data Room. Please try again.");
       console.error("Error creating dataroom:", error);
     } finally {
       setLoading(false);

@@ -75,7 +75,7 @@ function DeleteGroupModal({
       <div className="flex flex-col items-center justify-center space-y-3 border-b border-border bg-white px-4 py-4 pt-8 dark:border-gray-900 dark:bg-gray-900 sm:px-8">
         <CardTitle>Delete Group</CardTitle>
         <CardDescription>
-          Warning: This will permanently delete your dataroom group, all
+          Warning: This will permanently delete your Data Room group, all
           associated links and their respective views.
         </CardDescription>
       </div>

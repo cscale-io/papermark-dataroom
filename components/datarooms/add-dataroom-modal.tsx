@@ -165,7 +165,7 @@ export function AddDataroomModal({
 
   const handleGenerateFolders = async () => {
     if (!aiDescription.trim()) {
-      return toast.error("Please describe what kind of dataroom you want to create.");
+      return toast.error("Please describe what kind of Data Room you want to create.");
     }
 
     setAiGenerating(true);
@@ -215,7 +215,7 @@ export function AddDataroomModal({
     if (useAI && showPreview && generatedFolders) {
       // Validate dataroom name
       if (!dataroomName.trim()) {
-        return toast.error("Please provide a dataroom name.");
+        return toast.error("Please provide a Data Room name.");
       }
 
       if (dataroomName.trim().length < 3) {
@@ -261,11 +261,11 @@ export function AddDataroomModal({
         });
 
         mutate(`/api/teams/${teamInfo?.currentTeam?.id}/datarooms`);
-        toast.success("Dataroom successfully generated! 🎉");
+        toast.success("Data Room successfully generated! 🎉");
         router.push(`/datarooms/${dataroom.id}/documents`);
       } catch (error) {
         setLoading(false);
-        toast.error("Error creating dataroom. Please try again.");
+        toast.error("Error creating Data Room. Please try again.");
         return;
       } finally {
         setLoading(false);
@@ -335,7 +335,7 @@ export function AddDataroomModal({
       router.push(`/datarooms/${dataroom.id}/documents`);
     } catch (error) {
       setLoading(false);
-      toast.error("Error adding dataroom. Please try again.");
+      toast.error("Error adding Data Room. Please try again.");
       return;
     } finally {
       setLoading(false);
@@ -588,9 +588,9 @@ export function AddDataroomModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="border-none bg-transparent text-foreground shadow-none sm:max-w-[575px] [&>button]:hidden">
-        <DialogTitle className="sr-only">Create Dataroom</DialogTitle>
+        <DialogTitle className="sr-only">Create Data Room</DialogTitle>
         <DialogDescription className="sr-only">
-          Create a new dataroom or generate one with pre-configured folders
+          Create a new Data Room or generate one with pre-configured folders
         </DialogDescription>
 
         <Tabs
@@ -635,7 +635,7 @@ export function AddDataroomModal({
                 <span className="sr-only">Close</span>
               </button>
               <CardHeader className="space-y-3">
-                <CardTitle>Create dataroom</CardTitle>
+                <CardTitle>Create Data Room</CardTitle>
                 <CardDescription>
                   Start creating a dataroom with a name.
                 </CardDescription>
@@ -658,7 +658,7 @@ export function AddDataroomModal({
                     />
                   </div>
                   <Button type="submit" className="w-full" loading={loading}>
-                    Add new dataroom
+                    Add new Data Room
                   </Button>
                 </form>
               </CardContent>
@@ -675,9 +675,9 @@ export function AddDataroomModal({
                 <span className="sr-only">Close</span>
               </button>
               <CardHeader className="space-y-3">
-                <CardTitle>Create dataroom</CardTitle>
+                <CardTitle>Create Data Room</CardTitle>
                 <CardDescription>
-                  Create a dataroom with pre-configured folder structure.
+                  Create a Data Room with pre-configured folder structure.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -719,7 +719,7 @@ export function AddDataroomModal({
                     loading={loading}
                     disabled={!dataroomType}
                   >
-                    Create new dataroom
+                    Create new Data Room
                   </Button>
                 </form>
               </CardContent>
@@ -736,7 +736,7 @@ export function AddDataroomModal({
                 <span className="sr-only">Close</span>
               </button>
               <CardHeader className="space-y-3">
-                <CardTitle>Generate dataroom with AI</CardTitle>
+                <CardTitle>Generate Data Room with AI</CardTitle>
                 <CardDescription>
                   AI will create a unique and proven data room structure for your use case.
                 </CardDescription>
@@ -746,7 +746,7 @@ export function AddDataroomModal({
                   <>
                     <div className="space-y-1">
                       <Label htmlFor="ai-description">
-                        Describe your dataroom in details{" "}
+                        Describe your Data Room in details{" "}
                         <span className="text-black dark:text-white">*</span>
                       </Label>
                       <Textarea

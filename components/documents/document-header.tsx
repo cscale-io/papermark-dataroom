@@ -739,7 +739,7 @@ export default function DocumentHeader({
               {datarooms && datarooms.length !== 0 && (
                 <DropdownMenuItem onClick={() => setAddDataRoomOpen(true)}>
                   <BetweenHorizontalStartIcon className="mr-2 h-4 w-4" />
-                  Add to dataroom
+                  Add to Data Room
                 </DropdownMenuItem>
               )}
 

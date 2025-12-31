@@ -44,8 +44,8 @@ export function DeleteFolderModal({
         </DialogTitle>
         <DialogDescription>
           {isDataroom
-            ? "This will remove the folder and its contents from this dataroom. The original documents will remain in your workspace."
-            : "This will permanently delete the folder and all its contents, including subfolders, documents, dataroom references, and any visitor analytics."}
+            ? "This will remove the folder and its contents from this Data Room. The original documents will remain in your workspace."
+            : "This will permanently delete the folder and all its contents, including subfolders, documents, Data Room references, and any visitor analytics."}
           <div className="mt-3 text-sm font-medium text-foreground">
             {folderName}
           </div>

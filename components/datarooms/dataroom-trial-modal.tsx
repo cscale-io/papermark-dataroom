@@ -119,13 +119,13 @@ export function DataroomTrialModal({
         industry,
         companySize,
       });
-      toast.success("Dataroom successfully created! 🎉");
+      toast.success("Data Room successfully created! 🎉");
 
       await mutate(`/api/teams/${teamInfo?.currentTeam?.id}/datarooms`);
       router.push("/datarooms");
     } catch (error) {
       setLoading(false);
-      toast.error("Error adding dataroom. Please try again.");
+      toast.error("Error adding Data Room. Please try again.");
       return;
     } finally {
       setLoading(false);
@@ -148,7 +148,7 @@ export function DataroomTrialModal({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="text-start">
-          <DialogTitle>Dataroom Trial for 7 days</DialogTitle>
+          <DialogTitle>Data Room Trial for 7 days</DialogTitle>
           <DialogDescription>No credit card required.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">

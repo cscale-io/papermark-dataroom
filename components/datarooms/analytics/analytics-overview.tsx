@@ -127,7 +127,7 @@ export default function DataroomAnalyticsOverview({
             <Gauge value={completionRate} size="large" showValue={true} />
             <p className="mt-4 text-sm text-muted-foreground">
               Document has {documentStats?.totalViews || 0} view
-              {documentStats?.totalViews !== 1 ? "s" : ""} in this dataroom
+              {documentStats?.totalViews !== 1 ? "s" : ""} in this Data Room
             </p>
             {!selectedDocument && mostViewedDocument && (
               <button

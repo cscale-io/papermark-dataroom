@@ -88,7 +88,7 @@ export default function NotificationSettings({
         </CardTitle>
         <CardDescription>
           {!dataroomData?.enableChangeNotifications ? "Enable" : "Disable"}{" "}
-          change notification for this dataroom.
+          change notification for this Data Room.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
@@ -108,7 +108,7 @@ export default function NotificationSettings({
             verified visitors <BadgeCheckIcon className="h-4 w-4 font-normal" />
           </span>{" "}
           will automatically receive an email notification when new documents
-          are added to this dataroom.
+          are added to this Data Room.
         </p>
       </CardFooter>
     </Card>

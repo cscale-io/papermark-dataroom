@@ -116,13 +116,13 @@ export default function FolderCard({
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.message || "An error occurred while creating dataroom.",
+            errorData.message || "An error occurred while creating Data Room.",
           );
         }
         return response.json();
       }),
       {
-        loading: "Creating dataroom...",
+        loading: "Creating Data Room...",
         success: (data) => {
           toast.dismiss();
           setMenuOpen(false);
@@ -130,7 +130,7 @@ export default function FolderCard({
           toast.success(`Successfully created!`, {
             description: `${folder.name} → ${data.name}`,
             action: {
-              label: "Open Dataroom",
+              label: "Open Data Room",
               onClick: () => router.push(`/datarooms/${data.id}/documents`),
             },
             duration: 10000,
@@ -258,8 +258,8 @@ export default function FolderCard({
               >
                 <BetweenHorizontalStartIcon className="mr-2 h-4 w-4" />
                 {isDataroom
-                  ? "Copy folder to other dataroom"
-                  : "Add folder to dataroom"}
+                  ? "Copy folder to other Data Room"
+                  : "Add folder to Data Room"}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={(e) => {

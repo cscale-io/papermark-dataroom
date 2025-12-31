@@ -134,10 +134,10 @@ export function AddDocumentModal({
         `/api/teams/${teamInfo?.currentTeam?.id}/datarooms/${dataroomId}/folders/documents/${folderPathName}`,
       );
 
-      toast.success("Document added to dataroom successfully! 🎉");
+      toast.success("Document added to Data Room successfully! 🎉");
       return response;
     } catch (error) {
-      toast.error("Error adding document to dataroom.");
+      toast.error("Error adding document to Data Room.");
       console.error(
         "An error occurred while adding document to the dataroom: ",
         error,

@@ -88,7 +88,7 @@ export default function DataroomTemplates({
       setIsValidDataroomId(true);
     } catch (error) {
       console.error("Invalid dataroom ID:", error);
-      toast.error("Invalid dataroom ID. Redirecting...");
+      toast.error("Invalid Data Room ID. Redirecting...");
       router.push("/documents");
     }
   }, [dataroomId, router]);
@@ -132,7 +132,7 @@ export default function DataroomTemplates({
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.error("Invalid dataroom ID:", error);
-        toast.error("Invalid dataroom ID.");
+        toast.error("Invalid Data Room ID.");
       } else {
         console.error("Error applying template:", error);
         toast.error("Error applying template. Please try again.");

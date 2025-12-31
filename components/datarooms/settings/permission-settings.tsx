@@ -102,7 +102,7 @@ export default function PermissionSettings({
         <CardTitle>Default File Permissions</CardTitle>
         <CardDescription>
           Configure how permissions are handled for new documents and folders
-          added to this dataroom.
+          added to this Data Room.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

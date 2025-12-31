@@ -48,7 +48,7 @@ export function useDataroom() {
     dedupingInterval: 10000,
     onError: (err) => {
       if (err.status === 404) {
-        toast.error("Dataroom not found", {
+        toast.error("Data Room not found", {
           description:
             "The dataroom you're looking for doesn't exist or has been moved.",
         });

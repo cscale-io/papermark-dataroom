@@ -11,7 +11,7 @@ export function EmptyDataroom() {
         No datarooms here
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">
-        Get started by creating a new dataroom.
+        Get started by creating a new Data Room.
       </p>
     </div>
   );

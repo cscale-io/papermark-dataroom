@@ -150,7 +150,7 @@ export function PublishFAQModal({
       });
 
       if (!paramValidation.success) {
-        toast.error("Invalid team or dataroom ID");
+        toast.error("Invalid team or Data Room ID");
         return;
       }
 

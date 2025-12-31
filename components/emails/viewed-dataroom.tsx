@@ -30,7 +30,7 @@ export default function ViewedDataroom({
   return (
     <Html>
       <Head />
-      <Preview>See who visited your dataroom</Preview>
+      <Preview>See who visited your Data Room</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 w-[465px] p-5">
@@ -38,10 +38,10 @@ export default function ViewedDataroom({
               <span className="font-bold tracking-tighter">Papermark</span>
             </Text>
             <Text className="mx-0 my-7 p-0 text-center text-xl font-semibold text-black">
-              New Dataroom Visitor
+              New Data Room Visitor
             </Text>
             <Text className="text-sm leading-6 text-black">
-              Your dataroom{" "}
+              Your Data Room{" "}
               <span className="font-semibold">{dataroomName}</span> was just
               viewed by{" "}
               <span className="font-semibold">
@@ -57,7 +57,7 @@ export default function ViewedDataroom({
             </Text>
             <Text className="text-sm leading-6 text-black">
               You can get the detailed engagement analytics like time-spent per
-              document page and total duration for this dataroom on Papermark.
+              document page and total duration for this Data Room on Papermark.
             </Text>
             <Section className="my-8 text-center">
               <Button

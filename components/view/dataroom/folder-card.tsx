@@ -53,7 +53,7 @@ export default function FolderCard({
       return;
     }
     if (isPreview) {
-      toast.error("You cannot download dataroom folders in preview mode.");
+      toast.error("You cannot download Data Room folders in preview mode.");
       return;
     }
 

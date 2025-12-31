@@ -72,7 +72,7 @@ export default function BulkDownloadSettings({
   return (
     <Card className="bg-transparent">
       <CardHeader>
-        <CardTitle className="flex items-center">Dataroom Download</CardTitle>
+        <CardTitle className="flex items-center">Data Room Download</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">

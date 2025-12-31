@@ -48,7 +48,7 @@ export default function IndexFileSection({
             plan: "Data Rooms Plus",
           })
         }
-        tooltipContent="Allow visitors to generate an index file of all documents in the dataroom."
+        tooltipContent="Allow visitors to generate an index file of all documents in the Data Room."
       />
     </div>
   );

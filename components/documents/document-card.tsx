@@ -266,7 +266,7 @@ export default function DocumentsCard({
               {prismaDocument._count.datarooms > 0 && (
                 <div className="z-20">
                   <BadgeTooltip
-                    content={`In ${prismaDocument._count.datarooms} dataroom${prismaDocument._count.datarooms > 1 ? "s" : ""}`}
+                    content={`In ${prismaDocument._count.datarooms} Data Room${prismaDocument._count.datarooms > 1 ? "s" : ""}`}
                     key="dataroom"
                   >
                     <ServerIcon className="ml-2 h-4 w-4 text-[#fb7a00] hover:text-[#fb7a00]/90" />
@@ -375,7 +375,7 @@ export default function DocumentsCard({
               {datarooms && datarooms.length !== 0 && (
                 <DropdownMenuItem onClick={() => setAddDataroomOpen(true)}>
                   <BetweenHorizontalStartIcon className="mr-2 h-4 w-4" />
-                  Add to dataroom
+                  Add to Data Room
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />

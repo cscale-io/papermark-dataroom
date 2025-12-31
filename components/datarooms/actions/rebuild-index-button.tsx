@@ -112,7 +112,7 @@ export default function RebuildIndexButton({
             Rebuild Hierarchical Index
           </DialogTitle>
           <DialogDescription>
-            Recalculate the hierarchical numbering based on the dataroom
+            Recalculate the hierarchical numbering based on the Data Room
             items&apos; current order.
           </DialogDescription>
         </DialogHeader>

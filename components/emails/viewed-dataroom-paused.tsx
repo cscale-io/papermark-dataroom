@@ -25,7 +25,7 @@ export default function ViewedDataroomPausedEmail({
   return (
     <Html>
       <Head />
-      <Preview>See who visited your dataroom</Preview>
+      <Preview>See who visited your Data Room</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 w-[465px] p-5">
@@ -33,17 +33,17 @@ export default function ViewedDataroomPausedEmail({
               <span className="font-bold tracking-tighter">Papermark</span>
             </Text>
             <Text className="mx-0 my-7 p-0 text-center text-xl font-semibold text-black">
-              New Dataroom Visitor
+              New Data Room Visitor
             </Text>
             <Text className="text-sm leading-6 text-black">
-              Your dataroom{" "}
+              Your Data Room{" "}
               <span className="font-semibold">{dataroomName}</span> was just
               viewed by <span className="font-semibold">someone</span>
               from the link <span className="font-semibold">{linkName}</span>.
             </Text>
             <Text className="text-sm leading-6 text-black">
               Your team is currently paused, so detailed visitor information is
-              not available. To see who visited your dataroom and access full
+              not available. To see who visited your Data Room and access full
               analytics, please unpause your subscription.
             </Text>
             <Section className="my-8 text-center">

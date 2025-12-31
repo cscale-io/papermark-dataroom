@@ -117,7 +117,7 @@ export default function DuplicateDataroom({
     <div className="rounded-lg">
       <Card className="bg-transparent">
         <CardHeader>
-          <CardTitle>Duplicate Dataroom</CardTitle>
+          <CardTitle>Duplicate Data Room</CardTitle>
           <CardDescription>
             Create a new data room with the same content (folders and files) as
             this data room.

@@ -111,7 +111,7 @@ function BreadcrumbComponentBase({
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/datarooms">Datarooms</Link>
+            <Link href="/datarooms">Data Rooms</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />

@@ -146,7 +146,7 @@ export default function GenerateIndexDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Generate Dataroom Index File</DialogTitle>
+          <DialogTitle>Generate Data Room Index File</DialogTitle>
           <DialogDescription>
             {hasDataroomsPlan
               ? "Select a link and format to generate the index file."

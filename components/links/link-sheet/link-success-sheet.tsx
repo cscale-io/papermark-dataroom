@@ -75,7 +75,7 @@ export default function LinkSuccessSheet({
             Link Created Successfully
           </SheetTitle>
           <p className="text-sm text-muted-foreground">
-            Your dataroom link has been created and is ready to share.
+            Your Data Room link has been created and is ready to share.
           </p>
         </SheetHeader>
 

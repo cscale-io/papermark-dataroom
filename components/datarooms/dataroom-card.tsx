@@ -207,7 +207,7 @@ export default function DataroomCard({ dataroom }: DataroomCardProps) {
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Add documents to dataroom</p>
+                      <p>Add documents to Data Room</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -226,7 +226,7 @@ export default function DataroomCard({ dataroom }: DataroomCardProps) {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Share dataroom</p>
+                        <p>Share Data Room</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

@@ -98,7 +98,7 @@ export default function DocumentCard({
 
   const downloadDocument = async () => {
     if (isPreview) {
-      toast.error("You cannot download dataroom document in preview mode.");
+      toast.error("You cannot download Data Room document in preview mode.");
       return;
     }
 

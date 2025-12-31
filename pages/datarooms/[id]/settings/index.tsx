@@ -83,7 +83,7 @@ export default function Settings() {
                       mutate(`/api/teams/${teamId}/datarooms`),
                       mutate(`/api/teams/${teamId}/datarooms/${dataroom.id}`),
                     ]);
-                    toast.success("Successfully updated dataroom name!");
+                    toast.success("Successfully updated Data Room name!");
                   } else {
                     const { error } = await res.json();
                     toast.error(error.message);
@@ -162,7 +162,7 @@ export default function Settings() {
                       className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                       onClick={() => {
                         navigator.clipboard.writeText(dataroom.id);
-                        toast.success("Dataroom ID copied to clipboard");
+                        toast.success("Data Room ID copied to clipboard");
                         setIsCopied(true);
                         setTimeout(() => setIsCopied(false), 2000);
                       }}

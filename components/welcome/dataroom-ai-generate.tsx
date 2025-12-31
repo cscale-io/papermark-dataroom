@@ -165,7 +165,7 @@ export default function DataroomAIGenerate() {
 
   const handleGenerateFolders = async () => {
     if (!aiDescription.trim()) {
-      return toast.error("Please describe what kind of dataroom you want to create.");
+      return toast.error("Please describe what kind of Data Room you want to create.");
     }
 
     setAiGenerating(true);
@@ -207,7 +207,7 @@ export default function DataroomAIGenerate() {
 
   const handleCreateDataroom = async () => {
     if (!dataroomName.trim()) {
-      return toast.error("Please provide a dataroom name.");
+      return toast.error("Please provide a Data Room name.");
     }
 
     if (dataroomName.trim().length < 3) {
@@ -259,11 +259,11 @@ export default function DataroomAIGenerate() {
       });
 
       mutate(`/api/teams/${teamInfo?.currentTeam?.id}/datarooms`);
-      toast.success("Dataroom successfully generated! 🎉");
+      toast.success("Data Room successfully generated! 🎉");
       router.push(`/datarooms/${dataroom.id}/documents`);
     } catch (error) {
       setLoading(false);
-      toast.error("Error creating dataroom. Please try again.");
+      toast.error("Error creating Data Room. Please try again.");
     }
   };
 
@@ -362,7 +362,7 @@ export default function DataroomAIGenerate() {
         className="flex flex-col items-center space-y-10 text-center"
       >
         <h1 className="font-display text-balance text-3xl font-semibold text-foreground transition-colors sm:text-4xl">
-          Generate dataroom with AI
+          Generate Data Room with AI
         </h1>
       
       </motion.div>
@@ -374,7 +374,7 @@ export default function DataroomAIGenerate() {
           <>
             <div className="space-y-2 text-left">
               <Label htmlFor="ai-description" className="text-base">
-                Describe your dataroom in details{" "}
+                Describe your Data Room in details{" "}
                 <span className="text-black dark:text-white">*</span>
               </Label>
               <Textarea

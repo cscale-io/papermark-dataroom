@@ -25,9 +25,9 @@ export default function DeleteDataroom({
       <DeleteDataroomModal />
       <Card className="border-destructive bg-transparent">
         <CardHeader>
-          <CardTitle>Delete Dataroom</CardTitle>
+          <CardTitle>Delete Data Room</CardTitle>
           <CardDescription>
-            Permanently delete your dataroom all associated links and their
+            Permanently delete your Data Room all associated links and their
             views. <br />
             <span className="font-medium">This action cannot be undone</span> -
             please proceed with caution.

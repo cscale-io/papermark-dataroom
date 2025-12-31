@@ -89,7 +89,7 @@ export function AddFolderToDataroomModal({
       toast.success(`Folder added successfully!`, {
         description: `${folderName?.trim()} → ${dataroomName}`,
         action: {
-          label: "Open Dataroom",
+          label: "Open Data Room",
           onClick: () =>
             router.push(`/datarooms/${selectedDataroom}/documents`),
         },
@@ -97,7 +97,7 @@ export function AddFolderToDataroomModal({
       });
     } catch (error) {
       console.error("Error adding folder to dataroom", error);
-      toast.error("Failed to add folder to dataroom. Try again.");
+      toast.error("Failed to add folder to Data Room. Try again.");
     } finally {
       setLoading(false);
       setOpen(false);
@@ -111,11 +111,11 @@ export function AddFolderToDataroomModal({
           <DialogTitle>
             <span className="font-bold">{folderName}</span>
           </DialogTitle>
-          <DialogDescription>Add your folder to a dataroom.</DialogDescription>
+          <DialogDescription>Add your folder to a Data Room.</DialogDescription>
         </DialogHeader>
         <Select onValueChange={(value) => setSelectedDataroom(value)}>
           <SelectTrigger className="w-[380px] max-w-full [&>span]:truncate [&>span]:max-w-full [&>span]:overflow-hidden [&>span]:text-ellipsis [&>span]:whitespace-nowrap">
-            <SelectValue placeholder="Select a dataroom" />
+            <SelectValue placeholder="Select a Data Room" />
           </SelectTrigger>
           <SelectContent className="w-[380px] max-w-[90vw]">
             {datarooms?.map((dataroom) => (
@@ -144,7 +144,7 @@ export function AddFolderToDataroomModal({
               disabled={!selectedDataroom}
             >
               {!selectedDataroom ? (
-                "Select a dataroom"
+                "Select a Data Room"
               ) : (
                 <span className="flex items-center justify-center w-full max-w-[350px] truncate">
                   Add to

@@ -143,7 +143,7 @@ export function UploadContainer({
             }, 2000);
           } catch (error) {
             console.error("Error adding document to dataroom:", error);
-            toast.error("Failed to add document to dataroom");
+            toast.error("Failed to add document to Data Room");
             setUploading(false);
             return;
           }

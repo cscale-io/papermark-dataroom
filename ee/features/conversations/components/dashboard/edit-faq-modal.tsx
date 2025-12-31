@@ -109,7 +109,7 @@ export function EditFAQModal({
       });
 
       if (!paramValidation.success) {
-        toast.error("Invalid team, dataroom, or FAQ ID");
+        toast.error("Invalid team, Data Room, or FAQ ID");
         return;
       }
 

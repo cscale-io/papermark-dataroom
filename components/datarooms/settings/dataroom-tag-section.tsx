@@ -175,7 +175,7 @@ export default function DataroomTagSection({
         <CardHeader>
           <CardTitle>Tags</CardTitle>
           <CardDescription>
-            Organize your dataroom by adding tags for better categorization and
+            Organize your Data Room by adding tags for better categorization and
             filtering
           </CardDescription>
         </CardHeader>
@@ -183,7 +183,7 @@ export default function DataroomTagSection({
           <div className="flex justify-between">
             <div className="flex items-center gap-2">
               <Label htmlFor="dataroom-tags">Tags</Label>
-              <BadgeTooltip content="Organize datarooms by tags to easily filter and find them">
+              <BadgeTooltip content="Organize Data Rooms by tags to easily filter and find them">
                 <CircleHelpIcon className="h-4 w-4 shrink-0 text-muted-foreground hover:text-foreground" />
               </BadgeTooltip>
             </div>

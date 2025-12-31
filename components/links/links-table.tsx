@@ -197,7 +197,7 @@ export default function LinksTable({
         : `/api/teams/${currentTeamId}/datarooms/${targetId}/links`
       : null;
 
-  const dataroomDisplayName = dataroomName ?? "this dataroom";
+  const dataroomDisplayName = dataroomName ?? "this Data Room";
 
   const handleCopyToClipboard = (linkString: string) => {
     copyToClipboard(`${linkString}`, "Link copied to clipboard.");

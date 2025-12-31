@@ -44,7 +44,7 @@ const mockAnalyticsData = [
 export default function MockAnalyticsTable() {
   return (
     <div className="space-y-6">
-      <h3 className="mb-4 text-lg font-medium">Dataroom Analytics</h3>
+      <h3 className="mb-4 text-lg font-medium">Data Room Analytics</h3>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

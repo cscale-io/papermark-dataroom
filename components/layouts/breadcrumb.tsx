@@ -184,7 +184,7 @@ const SingleDataroomBreadcrumb = ({ path }: { path: string }) => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/datarooms">Datarooms</Link>
+            <Link href="/datarooms">Data Rooms</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
@@ -522,7 +522,7 @@ export const AppBreadcrumb = () => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Datarooms</BreadcrumbPage>
+              <BreadcrumbPage>Data Rooms</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

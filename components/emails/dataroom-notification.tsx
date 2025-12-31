@@ -29,7 +29,7 @@ export default function DataroomNotification({
   return (
     <Html>
       <Head />
-      <Preview>Dataroom update available</Preview>
+      <Preview>Data Room update available</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white font-sans">
           <Container className="mx-auto my-10 w-[465px] p-5">
@@ -43,7 +43,7 @@ export default function DataroomNotification({
               A new document{" "}
               <span className="font-semibold">{documentName}</span> has been
               added to <span className="font-semibold">{dataroomName}</span>{" "}
-              dataroom on Papermark.
+              Data Room on Papermark.
             </Text>
             <Section className="my-8 text-center">
               <Button
@@ -51,7 +51,7 @@ export default function DataroomNotification({
                 href={`${url}`}
                 style={{ padding: "12px 20px" }}
               >
-                View the dataroom
+                View the Data Room
               </Button>
             </Section>
             <Text className="text-sm text-black">
@@ -69,11 +69,11 @@ export default function DataroomNotification({
               <Text className="text-xs">
                 You received this email from{" "}
                 <span className="font-semibold">{senderEmail}</span> because you
-                viewed the dataroom{" "}
+                viewed the Data Room{" "}
                 <span className="font-semibold">{dataroomName}</span> on
                 Papermark. If you have any feedback or questions about this
                 email, simply reply to it. To unsubscribe from updates about
-                this dataroom,{" "}
+                this Data Room,{" "}
                 <a
                   href={unsubscribeUrl}
                   className="text-gray-400 underline underline-offset-2"

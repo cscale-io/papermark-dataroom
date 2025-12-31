@@ -126,7 +126,7 @@ export default function IndexFileDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Generate Dataroom Index File</DialogTitle>
+          <DialogTitle>Generate Data Room Index File</DialogTitle>
           <DialogDescription>
             Select a format to generate the index file.
           </DialogDescription>
