@@ -124,14 +124,6 @@ cd papermark
 pipenv update tinybird-cli
 ```
 
-## Contributing
+## Google Cloud App Setup
 
-Papermark is an open-source project, and we welcome contributions from the community.
-
-If you'd like to contribute, please fork the repository and make any changes you'd like. Pull requests are warmly welcome.
-
-### Our Contributors ✨
-
-<a href="https://github.com/mfts/papermark/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=mfts/papermark" />
-</a>
+https://console.cloud.google.com/auth/overview?project=papermark-482201&supportedpurview=project
