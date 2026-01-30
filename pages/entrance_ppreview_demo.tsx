@@ -55,7 +55,7 @@ export default function ViewPage() {
                   data-1p-ignore
                 />
                 <p className="text-sm text-gray-500">
-                  This data will be shared with C.Scale.
+                  Thank you!
                 </p>
               </div>
             </div>
