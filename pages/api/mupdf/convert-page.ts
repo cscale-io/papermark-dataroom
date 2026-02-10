@@ -50,7 +50,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     // Step 1: Fetch the PDF data
-    console.log("[convert-page] Step 1: Fetching PDF from URL...");
+    console.log("[convert-page] Step 1: Fetching PDF from URL...", {
+      fullUrl: url,
+      urlType: typeof url,
+    });
     let response: Response;
     try {
       response = await fetch(url);
@@ -60,6 +63,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         contentType: response.headers.get("content-type"),
         contentLength: response.headers.get("content-length"),
       });
+      
+      // Check if fetch returned an error status
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("[convert-page] PDF fetch returned error status", {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorBody.substring(0, 500),
+        });
+        throw new Error(`PDF fetch failed with status ${response.status}: ${errorBody.substring(0, 100)}`);
+      }
     } catch (error) {
       console.error("[convert-page] PDF fetch FAILED", { error: String(error) });
       log({
@@ -74,6 +88,30 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     console.log("[convert-page] Step 2: Converting response to ArrayBuffer...");
     const pdfData = await response.arrayBuffer();
     console.log("[convert-page] ArrayBuffer created", { byteLength: pdfData.byteLength });
+
+    // Validate that we actually received a PDF, not an error page
+    const pdfBytes = new Uint8Array(pdfData);
+    const first4Bytes = String.fromCharCode(...pdfBytes.slice(0, 4));
+    const first100Chars = new TextDecoder().decode(pdfBytes.slice(0, 100));
+    
+    console.log("[convert-page] PDF validation", {
+      first4Bytes,
+      isPdfHeader: first4Bytes === "%PDF",
+      first100Chars: first100Chars.substring(0, 100),
+      contentType: response.headers.get("content-type"),
+    });
+
+    if (first4Bytes !== "%PDF") {
+      // Not a PDF - probably an error page or expired URL
+      const errorPreview = first100Chars.substring(0, 200);
+      console.error("[convert-page] NOT A PDF! Received:", errorPreview);
+      log({
+        message: `PDF URL returned non-PDF content. First bytes: "${first4Bytes}". Preview: ${errorPreview}\n\n\`Metadata: {teamId: ${teamId}, documentVersionId: ${documentVersionId}, pageNumber: ${pageNumber}}\``,
+        type: "error",
+        mention: true,
+      });
+      throw new Error(`URL did not return a PDF. Content-Type: ${response.headers.get("content-type")}. Preview: ${errorPreview.substring(0, 50)}`);
+    }
 
     // Step 3: Create a MuPDF instance
     console.log("[convert-page] Step 3: Creating MuPDF document...");
