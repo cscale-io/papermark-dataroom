@@ -94,14 +94,6 @@ export default function UploadZone({
   dataroomId,
   dataroomName,
 }: UploadZoneProps) {
-  // UploadZone uses TUS protocol which only supports S3 uploads.
-  // When using Vercel Blob storage, disable the drag-and-drop zone
-  // and let users upload via the "Add Document" modal instead,
-  // which uses putFile() and respects NEXT_PUBLIC_UPLOAD_TRANSPORT.
-  if (process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT === "vercel") {
-    return <>{children}</>;
-  }
-
   const analytics = useAnalytics();
   const { plan, isFree, isTrial } = usePlan();
   const router = useRouter();
@@ -837,6 +829,14 @@ export default function UploadZone({
     onDropRejected,
     getFilesFromEvent,
   });
+
+  // UploadZone uses TUS protocol which only supports S3 uploads.
+  // When using Vercel Blob storage, disable the drag-and-drop zone
+  // and let users upload via the "Add Document" modal instead,
+  // which uses putFile() and respects NEXT_PUBLIC_UPLOAD_TRANSPORT.
+  if (process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT === "vercel") {
+    return <>{children}</>;
+  }
 
   return (
     <div
