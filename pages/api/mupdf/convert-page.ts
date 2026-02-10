@@ -281,15 +281,36 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const match = url.match(/(doc_[^\/]+)\//);
     const docId = match ? match[1] : undefined;
 
-    const { type, data } = await putFileServer({
-      file: {
-        name: `page-${pageNumber}.${chosenFormat}`,
-        type: `image/${chosenFormat}`,
-        buffer: buffer,
-      },
-      teamId: teamId,
-      docId: docId,
-    });
+    // Retry logic for blob upload (up to 3 attempts)
+    let type: any;
+    let data: any;
+    let uploadAttempts = 0;
+    const maxUploadAttempts = 3;
+    
+    while (uploadAttempts < maxUploadAttempts) {
+      uploadAttempts++;
+      try {
+        const result = await putFileServer({
+          file: {
+            name: `page-${pageNumber}.${chosenFormat}`,
+            type: `image/${chosenFormat}`,
+            buffer: buffer,
+          },
+          teamId: teamId,
+          docId: docId,
+        });
+        type = result.type;
+        data = result.data;
+        break; // Success, exit loop
+      } catch (uploadError) {
+        console.error(`Upload attempt ${uploadAttempts} failed:`, uploadError);
+        if (uploadAttempts >= maxUploadAttempts) {
+          throw new Error(`Failed to upload after ${maxUploadAttempts} attempts: ${uploadError}`);
+        }
+        // Wait before retry (exponential backoff: 1s, 2s, 4s)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, uploadAttempts - 1) * 1000));
+      }
+    }
 
     buffer = Buffer.alloc(0); // free memory
     chosenBuffer = Buffer.alloc(0); // free memory

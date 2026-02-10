@@ -88,7 +88,7 @@ export const convertFilesToPdfTask = task({
         },
       ]),
     );
-    formData.append("quality", "75");
+    formData.append("quality", "95");
 
     updateStatus({ progress: 20, text: "Converting document..." });
 
