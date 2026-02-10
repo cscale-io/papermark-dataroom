@@ -56,7 +56,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
     let response: Response;
     try {
-      response = await fetch(url);
+      response = await fetch(url, {
+        headers: {
+          "Accept": "application/pdf",
+          "User-Agent": "Papermark-PDFProcessor/1.0",
+        },
+      });
       console.log("[convert-page] PDF fetch response", {
         status: response.status,
         ok: response.ok,

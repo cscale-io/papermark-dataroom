@@ -54,6 +54,7 @@ export default async function handler(
 
         return {
           addRandomSuffix: true,
+          access: "public",
           allowedContentTypes:
             uploadConfig[type as keyof typeof uploadConfig].allowedContentTypes,
           maximumSizeInBytes:

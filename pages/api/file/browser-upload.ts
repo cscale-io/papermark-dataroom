@@ -52,6 +52,7 @@ export default async function handler(
 
         return {
           addRandomSuffix: true,
+          access: "public",
           allowedContentTypes: SUPPORTED_DOCUMENT_MIME_TYPES,
           maximumSizeInBytes: maxSize,
           metadata: JSON.stringify({

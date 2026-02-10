@@ -22,7 +22,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { url } = req.body as { url: string };
     // Fetch the PDF data
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        "Accept": "application/pdf",
+        "User-Agent": "Papermark-PDFProcessor/1.0",
+      },
+    });
     // Convert the response to an ArrayBuffer
     const pdfData = await response.arrayBuffer();
     // Create a MuPDF instance
