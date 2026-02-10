@@ -115,6 +115,13 @@ export const convertPdfToImageRoute = task({
 
       try {
         // send page number to api/convert-page endpoint in a task and get back page img url
+        logger.info(`Calling convert-page API`, {
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mupdf/convert-page`,
+          hasInternalApiKey: !!process.env.INTERNAL_API_KEY,
+          internalApiKeyLength: process.env.INTERNAL_API_KEY?.length,
+          pageNumber: currentPage,
+        });
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/mupdf/convert-page`,
           {
@@ -132,8 +139,28 @@ export const convertPdfToImageRoute = task({
           },
         );
 
+        logger.info(`convert-page response received`, {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+        });
+
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
+          // Read response body as text first to avoid consuming it twice
+          const errorText = await response.text();
+          logger.error("convert-page API failed", {
+            status: response.status,
+            statusText: response.statusText,
+            errorBody: errorText,
+            pageNumber: currentPage,
+          });
+
+          let errorData: any = {};
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            // Response was not JSON
+          }
 
           // If document was blocked, stop processing entirely
           if (response.status === 400 && errorData.error?.includes("blocked")) {
@@ -152,7 +179,7 @@ export const convertPdfToImageRoute = task({
             throw new Error("Document processing blocked");
           }
 
-          throw new Error("Failed to convert page");
+          throw new Error(`Failed to convert page: ${response.status} - ${errorText.substring(0, 500)}`);
         }
 
         const { documentPageId } = (await response.json()) as {

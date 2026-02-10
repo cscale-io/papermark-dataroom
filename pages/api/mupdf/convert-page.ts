@@ -38,12 +38,30 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     teamId: string;
   };
 
+  // Log request details for debugging
+  console.log("[convert-page] Request received", {
+    documentVersionId,
+    pageNumber,
+    teamId,
+    hasUrl: !!url,
+    urlLength: url?.length,
+    urlPrefix: url?.substring(0, 50),
+  });
+
   try {
-    // Fetch the PDF data
+    // Step 1: Fetch the PDF data
+    console.log("[convert-page] Step 1: Fetching PDF from URL...");
     let response: Response;
     try {
       response = await fetch(url);
+      console.log("[convert-page] PDF fetch response", {
+        status: response.status,
+        ok: response.ok,
+        contentType: response.headers.get("content-type"),
+        contentLength: response.headers.get("content-length"),
+      });
     } catch (error) {
+      console.error("[convert-page] PDF fetch FAILED", { error: String(error) });
       log({
         message: `Failed to fetch PDF in conversion process with error: \n\n Error: ${error} \n\n \`Metadata: {teamId: ${teamId}, documentVersionId: ${documentVersionId}, pageNumber: ${pageNumber}}\``,
         type: "error",
@@ -52,13 +70,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       throw new Error(`Failed to fetch pdf on document page ${pageNumber}`);
     }
 
-    // Convert the response to a buffer
+    // Step 2: Convert the response to a buffer
+    console.log("[convert-page] Step 2: Converting response to ArrayBuffer...");
     const pdfData = await response.arrayBuffer();
-    // Create a MuPDF instance
+    console.log("[convert-page] ArrayBuffer created", { byteLength: pdfData.byteLength });
+
+    // Step 3: Create a MuPDF instance
+    console.log("[convert-page] Step 3: Creating MuPDF document...");
     var doc = new mupdf.PDFDocument(pdfData);
+    console.log("[convert-page] MuPDF document created successfully");
     console.log("Original document size:", pdfData.byteLength);
 
+    // Step 4: Load the page
+    console.log("[convert-page] Step 4: Loading page", { pageNumber, pageIndex: pageNumber - 1 });
     const page = doc.loadPage(pageNumber - 1); // 0-based page index
+    console.log("[convert-page] Page loaded successfully");
+
     // get the bounds of the page for orientation and scaling
     const bounds = page.getBounds();
     const [ulx, uly, lrx, lry] = bounds;
@@ -209,6 +236,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       );
     }
 
+    // Step 5: Create pixmap (rasterize the page)
+    console.log("[convert-page] Step 5: Creating pixmap...", {
+      scaleFactor,
+      finalWidth,
+      finalHeight,
+      estimatedMemoryMB: estimatedMemoryMB.toFixed(1),
+    });
+
     console.time("toPixmap");
     let scaledPixmap;
     try {
@@ -249,7 +284,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       );
     }
     console.timeEnd("toPixmap");
+    console.log("[convert-page] Pixmap created successfully");
 
+    // Step 6: Encode as PNG and JPEG to compare sizes
+    console.log("[convert-page] Step 6: Encoding image...");
     console.time("compare");
     console.time("asPNG");
     const pngBuffer = scaledPixmap.asPNG(); // as PNG
@@ -280,6 +318,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // get docId from url with starts with "doc_" with regex
     const match = url.match(/(doc_[^\/]+)\//);
     const docId = match ? match[1] : undefined;
+
+    // Step 7: Upload to storage
+    console.log("[convert-page] Step 7: Uploading to storage...", {
+      fileName: `page-${pageNumber}.${chosenFormat}`,
+      bufferSize: buffer.byteLength,
+      teamId,
+      docId,
+      uploadTransport: process.env.NEXT_PUBLIC_UPLOAD_TRANSPORT,
+    });
 
     // Retry logic for blob upload (up to 3 attempts)
     let type: any;
@@ -312,6 +359,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
 
+    console.log("[convert-page] Upload successful", { type, dataLength: data?.length });
+
     buffer = Buffer.alloc(0); // free memory
     chosenBuffer = Buffer.alloc(0); // free memory
     scaledPixmap.destroy(); // free memory
@@ -321,6 +370,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       throw new Error(`Failed to upload document page ${pageNumber}`);
     }
 
+    // Step 8: Save to database
+    console.log("[convert-page] Step 8: Saving to database...");
     let documentPage: DocumentPage | null = null;
 
     // Check if a documentPage with the same pageNumber and versionId already exists
@@ -350,9 +401,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // Send the images as a response
+    console.log("[convert-page] Complete! documentPageId:", documentPage.id);
     res.status(200).json({ documentPageId: documentPage.id });
     return;
   } catch (error) {
+    console.error("[convert-page] FAILED with error:", error);
     log({
       message: `Failed to convert page with error: \n\n Error: ${error} \n\n \`Metadata: {teamId: ${teamId}, documentVersionId: ${documentVersionId}, pageNumber: ${pageNumber}}\``,
       type: "error",
