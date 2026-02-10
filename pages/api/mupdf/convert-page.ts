@@ -5,6 +5,7 @@ import { get } from "@vercel/edge-config";
 import { waitUntil } from "@vercel/functions";
 import * as mupdf from "mupdf";
 
+import { getFile } from "@/lib/files/get-file";
 import { putFileServer } from "@/lib/files/put-file-server";
 import prisma from "@/lib/prisma";
 import { log } from "@/lib/utils";
@@ -31,11 +32,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const { documentVersionId, pageNumber, url, teamId } = req.body as {
+  const { documentVersionId, pageNumber, url, teamId, storageType, fileKey } = req.body as {
     documentVersionId: string;
     pageNumber: number;
     url: string;
     teamId: string;
+    storageType?: string;
+    fileKey?: string;
   };
 
   // Log request details for debugging
@@ -49,44 +52,106 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   try {
-    // Step 1: Fetch the PDF data
+    // Step 1: Fetch the PDF data with retry logic
     console.log("[convert-page] Step 1: Fetching PDF from URL...", {
       fullUrl: url,
       urlType: typeof url,
+      hasStorageMetadata: !!(storageType && fileKey),
     });
-    let response: Response;
-    try {
-      response = await fetch(url, {
-        headers: {
-          "Accept": "application/pdf",
-          "User-Agent": "Papermark-PDFProcessor/1.0",
-        },
-      });
-      console.log("[convert-page] PDF fetch response", {
-        status: response.status,
-        ok: response.ok,
-        contentType: response.headers.get("content-type"),
-        contentLength: response.headers.get("content-length"),
-      });
-      
-      // Check if fetch returned an error status
-      if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("[convert-page] PDF fetch returned error status", {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorBody.substring(0, 500),
+    
+    let response: Response | undefined;
+    let lastError: Error | null = null;
+    const maxRetries = 3;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        // For first attempt, use provided URL
+        // For retries, regenerate the URL if we have the metadata
+        let fetchUrl = url;
+        
+        if (attempt > 0 && storageType && fileKey) {
+          console.log(`[convert-page] Attempt ${attempt + 1}: Regenerating URL with download authentication`, {
+            storageType,
+            fileKeyPrefix: fileKey.substring(0, 50),
+          });
+          
+          // Use isDownload: true to force fresh signed URLs for both S3 and Vercel Blob
+          fetchUrl = await getFile({
+            type: storageType as any,
+            data: fileKey,
+            isDownload: true,
+          });
+          
+          console.log(`[convert-page] New authenticated URL generated`, {
+            urlPrefix: fetchUrl.substring(0, 50),
+          });
+        }
+
+        console.log(`[convert-page] Attempt ${attempt + 1}: Fetching PDF...`);
+        response = await fetch(fetchUrl, {
+          headers: {
+            "Accept": "application/pdf",
+            "User-Agent": "Papermark-PDFProcessor/1.0",
+          },
         });
+
+        console.log("[convert-page] PDF fetch response", {
+          attempt: attempt + 1,
+          status: response.status,
+          ok: response.ok,
+          contentType: response.headers.get("content-type"),
+          contentLength: response.headers.get("content-length"),
+        });
+
+        if (response.ok) {
+          // Success! Break out of retry loop
+          console.log(`[convert-page] Successfully fetched PDF on attempt ${attempt + 1}`);
+          break;
+        }
+
+        // If we get 403/401, the URL might be expired or blocked
+        if (response.status === 403 || response.status === 401) {
+          const errorBody = await response.text();
+          lastError = new Error(`HTTP ${response.status}: ${errorBody.substring(0, 100)}`);
+          console.log(`[convert-page] Attempt ${attempt + 1} failed with ${response.status}${attempt < maxRetries - 1 ? ", will retry..." : ""}`);
+          
+          // Add exponential backoff before retry
+          if (attempt < maxRetries - 1) {
+            const delayMs = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+            console.log(`[convert-page] Waiting ${delayMs}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+          }
+          continue;
+        }
+
+        // For other errors, throw immediately
+        const errorBody = await response.text();
         throw new Error(`PDF fetch failed with status ${response.status}: ${errorBody.substring(0, 100)}`);
+        
+      } catch (error) {
+        lastError = error as Error;
+        console.error(`[convert-page] Attempt ${attempt + 1} error:`, String(error));
+        
+        if (attempt < maxRetries - 1) {
+          const delayMs = Math.pow(2, attempt) * 1000;
+          console.log(`[convert-page] Waiting ${delayMs}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+        }
       }
-    } catch (error) {
-      console.error("[convert-page] PDF fetch FAILED", { error: String(error) });
+    }
+
+    // If all retries failed
+    if (!response || !response.ok) {
+      console.error("[convert-page] PDF fetch FAILED after all retries", { 
+        error: String(lastError),
+        attempts: maxRetries,
+      });
       log({
-        message: `Failed to fetch PDF in conversion process with error: \n\n Error: ${error} \n\n \`Metadata: {teamId: ${teamId}, documentVersionId: ${documentVersionId}, pageNumber: ${pageNumber}}\``,
+        message: `Failed to fetch PDF in conversion process after ${maxRetries} attempts with error: \n\n Error: ${lastError} \n\n \`Metadata: {teamId: ${teamId}, documentVersionId: ${documentVersionId}, pageNumber: ${pageNumber}}\``,
         type: "error",
         mention: true,
       });
-      throw new Error(`Failed to fetch pdf on document page ${pageNumber}`);
+      throw new Error(`Failed to fetch pdf on document page ${pageNumber} after ${maxRetries} retries`);
     }
 
     // Step 2: Convert the response to a buffer

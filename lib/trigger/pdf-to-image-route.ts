@@ -65,7 +65,11 @@ export const convertPdfToImageRoute = task({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/mupdf/get-pages`,
         {
           method: "POST",
-          body: JSON.stringify({ url: signedUrl }),
+          body: JSON.stringify({ 
+            url: signedUrl,
+            storageType: documentVersion.storageType,
+            fileKey: documentVersion.file,
+          }),
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.INTERNAL_API_KEY}`,
@@ -131,6 +135,8 @@ export const convertPdfToImageRoute = task({
               pageNumber: currentPage,
               url: signedUrl,
               teamId: teamId,
+              storageType: documentVersion.storageType,
+              fileKey: documentVersion.file,
             }),
             headers: {
               "Content-Type": "application/json",
