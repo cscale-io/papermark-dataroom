@@ -6,7 +6,12 @@ import { WEBHOOK_TRIGGERS } from "../webhook/constants";
 
 // Only initialize Tinybird if token is configured
 const TINYBIRD_TOKEN = process.env.TINYBIRD_TOKEN;
-const tb = TINYBIRD_TOKEN ? new Tinybird({ token: TINYBIRD_TOKEN }) : null;
+const tb = TINYBIRD_TOKEN 
+  ? new Tinybird({ 
+      token: TINYBIRD_TOKEN,
+      baseUrl: process.env.TINYBIRD_BASE_URL || "https://api.us-east.aws.tinybird.co"
+    }) 
+  : null;
 
 // Helper to create a no-op ingest endpoint that does nothing when Tinybird is not configured
 const createNoOpIngest = () => async () => {};
